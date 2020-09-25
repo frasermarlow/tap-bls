@@ -17,4 +17,14 @@ sudo apt-get install -y python3-dev libssl-dev
 
 sudo apt install -y pylint
 
+sudo apt-get install -y python3-venv
+
+curl https://pyenv.run | bash
+
+echo '' >> ~/.bashrc
+echo 'export PATH="/home/ubuntu/.pyenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+exec "$SHELL"
+
 Create then Activate venv with `source ~/.venvs/tap_bls/bin/activate`
