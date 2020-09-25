@@ -30,4 +30,8 @@ exec "$SHELL"
 pyenv install 3.5.3
 
 # Create then Activate venv with 
-source ~/.venvs/tap_bls/bin/activate
+python3 -m venv ~/.virtualenvs/tap-bls
+source ~/.virtualenvs/tap_bls/bin/activate
+pyenv local 3.5.3
+pip install --upgrade pip wheel
+
