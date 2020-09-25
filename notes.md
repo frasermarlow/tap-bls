@@ -27,4 +27,7 @@ echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
 exec "$SHELL"
 
-Create then Activate venv with `source ~/.venvs/tap_bls/bin/activate`
+pyenv install 3.5.3
+
+# Create then Activate venv with 
+source ~/.venvs/tap_bls/bin/activate
