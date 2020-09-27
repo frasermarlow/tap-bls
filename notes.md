@@ -29,9 +29,29 @@ exec "$SHELL"
 
 pyenv install 3.5.3
 
+pip install cookiecutter
+
+pip install singer-python singer-tools target-stitch target-json
+
 # Create then Activate venv with 
 python3 -m venv ~/.virtualenvs/tap-bls
-source ~/.virtualenvs/tap_bls/bin/activate
+source ~/.virtualenvs/tap-bls/bin/activate
 pyenv local 3.5.3
 pip install --upgrade pip wheel
+
+cd tap-bls 
+
+pip install -e .
+
+tap-bls -c sample_config.json --discover > catalog.json
+
+tap-foobar -c sample_config.json --properties catalog.json
+
+#install tap-csv
+python3 -m venv ~/.virtualenvs/target-csv      # create a virtual environment specific to this tap
+source ~/.virtualenvs/target-csv/bin/activate  # activate the virtual environment
+pyenv local 3.5.3
+pip install --upgrade pip wheel
+pip install target-csv
+deactivate
 
