@@ -47,7 +47,7 @@ tap-bls -c sample_config.json --discover > catalog.json
 
 tap-foobar -c sample_config.json --properties catalog.json
 
-#install tap-csv
+# install tap-csv
 python3 -m venv ~/.virtualenvs/target-csv      # create a virtual environment specific to this tap
 source ~/.virtualenvs/target-csv/bin/activate  # activate the virtual environment
 pyenv local 3.5.3
@@ -55,3 +55,6 @@ pip install --upgrade pip wheel
 pip install target-csv
 deactivate
 
+# run the tap
+
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json
