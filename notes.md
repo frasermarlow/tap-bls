@@ -57,7 +57,7 @@ deactivate
 
 # run the tap
 
-~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json | ~/.virtualenvs/target-csv/bin/target-csv
 
 
 Google Sheets API key:
