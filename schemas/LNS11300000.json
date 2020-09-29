@@ -1,0 +1,19 @@
+{
+"seriesID" : "LNS11300000",
+"series_description": "Labor Force Participation Rate (CIVPART)",
+"data":  {
+"year": {
+      	"type": ["null", "integer"]
+	},
+"period":{
+      	"type": ["null", "string"]
+    	},
+"periodName": {
+      "type": ["null", "string"]
+    	},
+"value":{
+      	"type": ["null", "number"]
+    	},
+"footnotes": ""
+	}
+}
