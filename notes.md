@@ -35,8 +35,11 @@ pip install singer-python singer-tools target-stitch target-json
 
 # Create then Activate venv with 
 python3 -m venv ~/.virtualenvs/tap-bls
+
 source ~/.virtualenvs/tap-bls/bin/activate
+
 pyenv local 3.5.3
+
 pip install --upgrade pip wheel
 
 cd tap-bls 
