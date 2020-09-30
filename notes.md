@@ -9,6 +9,11 @@ pip install --upgrade pip
 
 sudo apt install git
 
+# set Git up to remember your credentials (stored in will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
+
+git config credential.helper store && git config --global credential.helper store
+
+
 sudo apt-get install cron
 
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl
