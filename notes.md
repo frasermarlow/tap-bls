@@ -9,7 +9,9 @@ pip install --upgrade pip
 
 sudo apt install git
 
-# set Git up to remember your credentials (stored in will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
+git clone https://github.com/frasermarlow/tap-bls
+
+#### After you clone the directory, set Git up to remember your credentials (stored in will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
 
 git config credential.helper store && git config --global credential.helper store
 
