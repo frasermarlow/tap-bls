@@ -53,9 +53,16 @@ cd tap-bls
 
 pip install -e .
 
-tap-bls -c sample_config.json --discover > catalog.json
+deactivate # exit the virtual environment
 
-tap-foobar -c sample_config.json --properties catalog.json
+> Note that I create the config file in a separate directory, and not in the tap.
+
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json
+
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --properties catalog.json
+
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover
+
 
 # install tap-csv
 python3 -m venv ~/.virtualenvs/target-csv      # create a virtual environment specific to this tap

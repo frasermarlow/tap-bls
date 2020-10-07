@@ -22,7 +22,7 @@ The BLS provides [an API for pulling data from their records](https://www.bls.go
 
 ## Why is this cool?
 
-Well the BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm)
+Well the BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm) and the most popular data series (a.k.a. "The BLS Greatest Hits!") can be found [here](https://data.bls.gov/cgi-bin/surveymost?bls).
 
 So say you wanted to know the monthly rate at which Americans were quitting their jobs during the 2009/2010 recession you could simply query https://api.bls.gov/publicAPI/v2/timeseries/data/JTS00000000QUR?startyear=2008&endyear=2011  and see that it rapidly dropped from 2.2% in 2007 to a low of 1.3% at the end of 2009.
 
