@@ -4,8 +4,8 @@ from setuptools import setup
 setup(
     name="tap-bls",
     version="0.1.0",
-    description="Singer.io tap for extracting data",
-    author="Stitch",
+    description="Singer.io tap for extracting data from the Bureau of Labor Statistics API 2.0",
+    author="Stitch + Fraser Marlow",
     url="http://singer.io",
     classifiers=["Programming Language :: Python :: 3 :: Only"],
     py_modules=["tap_bls"],
@@ -13,6 +13,7 @@ setup(
         # NB: Pin these to a more specific version for tap reliability
         "singer-python",
         "requests",
+        "PTable"
     ],
     entry_points="""
     [console_scripts]
