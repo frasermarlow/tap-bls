@@ -52,10 +52,16 @@ The BLS offers many data sources; CATALOG is used to filter which streams should
 from [this article](https://www.stitchdata.com/blog/how-to-build-a-singer-tap-infographic/)
 > As I begin tap development, I seek to understand the data source API, authentication, endpoints, query parameters (especially sorting and filtering), pagination, error codes, and rate limiting by reading the API documentation and by running REST GET requests with an app like Talend's API Tester. For each of the streams, I record the endpoint URL, query parameters, primary key, bookmark fields, and other metadata in streams.py. I examine the API response formats, nested objects and arrays, and field data types and create a schema.json file for each endpoint.
 
-## data source API
+## data source API (and limitations thereof)
 Our data source API is [version 2 of the BLS API](https://www.bls.gov/developers/) which requires [registration](https://data.bls.gov/registrationEngine/). It provides a mechanism for grabbing JSON historical timeseries data. The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
-Since Python is the language of choice for Singer.io taps, we are going to stick with that and ]sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).
+The API has some 'fair use' limitations outlined [here](https://www.bls.gov/developers/api_faqs.htm#register1) - namely 50 series per query, 500 daily queries, 50 requests per 10 seconds etc.
+Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit! 
+
+Python is the language of choice for Singer.io taps, we are going to stick with that and [sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).  The BLS provide alternatives in most popular languages.
+
 ## authentication
+Authentication is through an API key which is free to get but requires [registration](https://data.bls.gov/registrationEngine/).
+
 ## endpoints
 HTTP Type:	POST
 URL (JSON):	https://api.bls.gov/publicAPI/v2/timeseries/data/
