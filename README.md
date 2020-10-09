@@ -53,10 +53,14 @@ from [this article](https://www.stitchdata.com/blog/how-to-build-a-singer-tap-in
 > As I begin tap development, I seek to understand the data source API, authentication, endpoints, query parameters (especially sorting and filtering), pagination, error codes, and rate limiting by reading the API documentation and by running REST GET requests with an app like Talend's API Tester. For each of the streams, I record the endpoint URL, query parameters, primary key, bookmark fields, and other metadata in streams.py. I examine the API response formats, nested objects and arrays, and field data types and create a schema.json file for each endpoint.
 
 ## data source API (and limitations thereof)
-Our data source API is [version 2 of the BLS API](https://www.bls.gov/developers/) which requires [registration](https://data.bls.gov/registrationEngine/). It provides a mechanism for grabbing JSON historical timeseries data. The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
-The API has some 'fair use' limitations outlined [here](https://www.bls.gov/developers/api_faqs.htm#register1) - namely 50 series per query, 500 daily queries, 50 requests per 10 seconds etc.
-Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit! 
+Our data source API is [version 2 of the BLS API](https://www.bls.gov/developers/) which requires [registration](https://data.bls.gov/registrationEngine/). 
 
+If you do not provide an API key, you will be restricted in the volume of data you can pull.  This said, even an authenticated user has limits.
+
+The API provides a mechanism for grabbing JSON historical timeseries data. The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
+The API has some 'fair use' limitations outlined [here](https://www.bls.gov/developers/api_faqs.htm#register1) - namely 50 series per query, 500 daily queries, 50 requests per 10 seconds etc.
+The BLS data goes back to the year 2000, so any start date prior to 2000-01-01 will default to that date.
+Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit! 
 Python is the language of choice for Singer.io taps, we are going to stick with that and [sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).  The BLS provide alternatives in most popular languages.
 
 ## authentication
@@ -71,6 +75,4 @@ Header:	Content-Type= application/json
 The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request.
 ## pagination
 ## error codes
-## API and data limits
-The BLS data goes back to the year 2000, so any start date prior to 2000-01-01 will default to that date.
-If you do not provide an API key, you will be restricted in the volume of data you can pull.  this said, even an authenticated user has limits:
+
