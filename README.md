@@ -30,7 +30,7 @@ So say you wanted to know the monthly rate at which Americans were quitting thei
 
 The volume of data available can quickly get overwhelming.  Just one topic - [Producer Price Indexes - has 318 distinct data series](https://www.bls.gov/ppi/expaggseriesids.htm). Others are so complex, they provide entire excel sheets full of time series references, as is the case for the [American Time Use study](https://www.bls.gov/tus/seriesid.htm). An explanation of [how the BLS structures Series IDs for each topic can be found here](https://www.bls.gov/help/hlpforma.htm).  
 
-A good starting point when looking for available data series is [Databases, Tables & Calculators by Subject](https://www.bls.gov/data/#api)
+A good starting point when looking for available data series is [Databases, Tables & Calculators by Subject](https://www.bls.gov/data/#api) or the [data series by topic](https://www.bls.gov/cps/cpsdbtabs.htm).
 
 With this in mind, the tap provides a framework you can use to ingest BLS data using Singer, but the catalog file would be overwhelming if we attempted to provide every available data series, even if these were maked as `unselected` in the catalog.js. So the tap is provided with a dozen different series taken form some of the most popular ones but may need configuration fo rthe data series you want to pull in.
 
