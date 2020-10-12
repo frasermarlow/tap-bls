@@ -55,6 +55,7 @@ def discover():
 
 def sync(config, state, catalog):
     """ Sync data from tap source """
+    
     # Loop over selected streams in catalog
     for stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
@@ -83,9 +84,9 @@ def sync(config, state, catalog):
         
         fetched_series = [stream.tap_stream_id]
         
-        catalog = {"seriesid": fetched_series,"startyear":"2019", "endyear":"2020", "registrationkey":"5fbea9aefbe24c338b9f4f92ac4516ab"}
+        api_variables = {"seriesid": fetched_series,"startyear":config['startyear'], "endyear":config['endyear'], "registrationkey":config['api-key']}
         
-        json_data = call_api(catalog)
+        json_data = call_api(api_variables)
         
         # print('\nLine 84: ',json_data)
         
@@ -114,12 +115,29 @@ def sync(config, state, catalog):
                     month = ""
                     quater= ""
                 value = item['value']
+                full_period = str(year) + "-" + str("{0:0=2d}".format(month)) + "-01T00:00:00-04:00"
                 footnotes=""
                 for footnote in item['footnotes']:
                     if footnote:
                         footnotes = footnotes + footnote['text'] + ','
                 
-                next_row = {"type":"RECORD","stream": seriesId,"time_extracted": time_extracted,"schema":seriesId,"record":{"SeriesID": seriesId,"year": year,"period": period,"value": value,"footnotes":footnotes[0:-1],"month": str(month),"quarter":str(quarter) ,"time_extracted":time_extracted}}
+                next_row = {
+                    "type":"RECORD",
+                    "stream": seriesId,
+                    "time_extracted": time_extracted,
+                    "schema":seriesId,
+                    "record":{
+                        "SeriesID": seriesId,
+                        "year": year,
+                        "period": period,
+                        "value": value,
+                        "footnotes":footnotes[0:-1],
+                        "month": str(month),
+                        "quarter":str(quarter) ,
+                        "time_extracted":time_extracted,
+                        "full_period":full_period
+                        }
+                    }
         
                 # write one or more rows to the stream:
                 singer.write_records(stream.tap_stream_id,[next_row])

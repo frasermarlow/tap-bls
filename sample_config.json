@@ -1,5 +1,6 @@
 {
-  "username": "my_username",
-  "password": "my_password",
-  "start_date": "2017-01-01T00:00:00Z"
+	"user-id": "your.name@emailprovider.com",
+	"api-key": "your-bls-issued-api-key-goes-here",
+	"startyear": "2019",
+	"endyear": "2020"
 }
