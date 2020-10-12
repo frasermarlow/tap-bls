@@ -1,33 +1,64 @@
 {
   "streams": [
     {
-      "tap_stream_id": "sample_stream",
+      "tap_stream_id": "CES0000000001",
       "key_properties": [],
       "schema": {
         "properties": {
-          "string_field": {
+          "SeriesID": {
             "type": [
               "null",
               "string"
             ]
           },
-          "datetime_field": {
+          "year": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "period": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "value": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "footnotes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "month": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "quarter": {
+            "type": [
+              "integer",
+              "integer"
+            ]
+          },
+          "full_period": {
             "format": "date-time",
             "type": [
               "null",
               "string"
             ]
           },
-          "integer_field": {
+          "time_extracted": {
+            "format": "date-time",
             "type": [
               "null",
-              "integer"
-            ]
-          },
-          "double_field": {
-            "type": [
-              "null",
-              "number"
+              "string"
             ]
           }
         },
@@ -37,8 +68,95 @@
         ],
         "additionalProperties": false
       },
-      "stream": "sample_stream",
-      "metadata": []
+      "stream": "CES0000000001",
+      "metadata": [
+        {
+          "metadata": {
+            "inclusion": "available",
+            "selected": "true"
+          },
+          "breadcrumb": []
+        }
+      ]
+    },
+    {
+      "tap_stream_id": "LNS11300000",
+      "key_properties": [],
+      "schema": {
+        "properties": {
+          "SeriesID": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "year": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "period": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "value": {
+            "type": [
+              "null",
+              "number"
+            ]
+          },
+          "footnotes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "month": {
+            "type": [
+              "null",
+              "integer"
+            ]
+          },
+          "quarter": {
+            "type": [
+              "integer",
+              "integer"
+            ]
+          },
+          "full_period": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "time_extracted": {
+            "format": "date-time",
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "type": [
+          "null",
+          "object"
+        ],
+        "additionalProperties": false
+      },
+      "stream": "LNS11300000",
+      "metadata": [
+        {
+          "metadata": {
+            "inclusion": "available",
+            "selected": "true"
+          },
+          "breadcrumb": []
+        }
+      ]
     }
   ]
 }
