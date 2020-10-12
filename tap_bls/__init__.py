@@ -53,24 +53,25 @@ def discover():
         )
     return Catalog(streams) # object with class 'singer.catalog.Catalog'
 
-
 def sync(config, state, catalog):
     """ Sync data from tap source """
     # Loop over selected streams in catalog
     for stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
         
-        # print('\n',stream,' | ',type(stream),'\n')
-        # print('this stream id',stream.tap_stream_id,'\n')
-        
         bookmark_column = stream.replication_key
         is_sorted = True  # TODO: indicate whether data is sorted ascending on bookmark value
 
-        # singer.write_schema(
-        #     stream_name=stream.tap_stream_id,
-        #     schema=stream.schema,
-        #     key_properties=stream.key_properties,
-        # )
+
+        # print('\nSTREAM ID: ',stream.tap_stream_id,'\n')
+        # print('\nSCHEMA: ',stream.schema,'\n')
+        # print('\nKEY PROPERTIES: ',stream.key_properties,'\n')
+
+        singer.write_schema(
+            stream_name=stream.tap_stream_id,
+            schema=stream.schema.to_dict(), #the to_dict() bit is a change to the cookiecutter template.
+            key_properties=stream.key_properties,
+        )
 
         ####  SUPER MANUAL CALL STARTS HERE ####       
                 

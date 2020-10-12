@@ -1,6 +1,6 @@
 {
 	"type": ["null", "object"],
-	"additionalProperties":false,
+	"additionalProperties":["schema", "record", "type", "stream"],
 	"seriesID" : "LNS11300000",
 	"series_frequency" : "monthly",
 	"series_description": "Labor Force Participation Rate (CIVPART)",
