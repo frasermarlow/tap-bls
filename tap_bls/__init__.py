@@ -10,8 +10,14 @@ from singer import utils, metadata
 from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 
-REQUIRED_CONFIG_KEYS = ["user-id", "api-key", "startyear", "endyear"]
+# For dumb testing - delete this function later
+def whatisthis(item):
+        print('\n',item,'\nTYPE: ',type(item),'\n')
+
+
+REQUIRED_CONFIG_KEYS = ["calculations", "user-id", "api-key", "startyear", "endyear"]
 LOGGER = singer.get_logger()
+
 
 # function for finding a file on the system running the tap, relative to the file running the tap.
 def get_abs_path(path):
@@ -34,21 +40,23 @@ def discover():
     for stream_id, schema in raw_schemas.items():
         # TODO: populate any metadata and stream's key properties here..
         stream_metadata = [{"metadata":{"inclusion":"available","selected":"true"},"breadcrumb":[]}]
-        key_properties = []
+        key_properties = ["year"]
+        rep_key = None
+        rep_method = None
         streams.append(
             CatalogEntry(
                 tap_stream_id=stream_id,
                 stream=stream_id,
-                schema=schema,
                 key_properties=key_properties,
                 metadata=stream_metadata,
-                replication_key=None,
+                replication_key=rep_key,
                 is_view=None,
                 database=None,
                 table=None,
                 row_count=None,
                 stream_alias=None,
-                replication_method=None,
+                replication_method=rep_method,
+                schema=schema    
             )
         )
     return Catalog(streams) # object with class 'singer.catalog.Catalog'
@@ -58,6 +66,10 @@ def sync(config, state, catalog):
     
     # Loop over selected streams in catalog
     for stream in catalog.get_selected_streams(state):
+        
+        if stream.stream in state.keys():
+            print("Pick up here and set start year to state year")
+        
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
         
         bookmark_column = stream.replication_key
@@ -84,7 +96,7 @@ def sync(config, state, catalog):
         
         fetched_series = [stream.tap_stream_id]
         
-        api_variables = {"seriesid": fetched_series,"startyear":config['startyear'], "endyear":config['endyear'], "registrationkey":config['api-key']}
+        api_variables = {"seriesid": fetched_series,"startyear":config['startyear'], "endyear":config['endyear'],"calculations":config['calculations'],"registrationkey":config['api-key']}
         
         json_data = call_api(api_variables)
         
@@ -97,10 +109,10 @@ def sync(config, state, catalog):
         thetimeformatted = thetime.astimezone().isoformat()
         
         for series in json_data['Results']['series']:
-            seriesId = series['seriesID']
-            time_extracted = utc.localize(datetime.datetime.now()).astimezone().isoformat()
         
-            # print('{"type":"SCHEMA", "stream":"' + seriesId + '","key_properties":[],"bookmark_properties":["time_extracted"],"schema":{"type":"object", "properties":{"SeriesID":{"type":"string"},"year":{"type":"integer"},"period":{"type":"string"},"value":{"type":"number"},"footnotes":{"type":"string"},"month":{"type":"integer"},"quarter":{"type":"integer"},"time_extracted":{"type":["null","string"],"format":"date-time"}}}}')
+        
+            seriesId = series['seriesID']                
+            time_extracted = utc.localize(datetime.datetime.now()).astimezone().isoformat()
         
             for item in series['data']:
                 year = item['year']
@@ -120,7 +132,7 @@ def sync(config, state, catalog):
                 for footnote in item['footnotes']:
                     if footnote:
                         footnotes = footnotes + footnote['text'] + ','
-                
+
                 next_row = {
                     "type":"RECORD",
                     "stream": seriesId,
@@ -141,6 +153,8 @@ def sync(config, state, catalog):
         
                 # write one or more rows to the stream:
                 singer.write_records(stream.tap_stream_id,[next_row])
+                
+                # capture stream state
                 if bookmark_column:
                     if is_sorted:
                         # update bookmark to latest value
@@ -150,7 +164,8 @@ def sync(config, state, catalog):
                         max_bookmark = max(max_bookmark, row[bookmark_column])
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})               
-
+        state_message = {'foo': 'bar'}
+        singer.write_state(state_message)
     return
 
 @utils.handle_top_exception(LOGGER)  # decorates main with exception logging 
@@ -168,9 +183,9 @@ def main():
             catalog = args.catalog
         else:
             catalog = discover()
+            
         sync(args.config, args.state, catalog)
 
 # if this file is being called as the main program, execute the function main().
 if __name__ == "__main__":
     main()
-
