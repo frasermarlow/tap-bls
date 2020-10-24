@@ -4,6 +4,7 @@ import json         # parsing json files
 import datetime     # time and dates functions
 import pytz         # timestamp localization / timezones
 import requests     # http and api calls library
+from .update_state import update_state
 
 import singer
 from singer import utils, metadata
@@ -12,12 +13,20 @@ from singer.schema import Schema
 
 # For dumb testing - delete this function later
 def whatisthis(item):
-        print('\n',item,'\nTYPE: ',type(item),'\n')
+        try:
+            item_name = item.__name__
+        except:
+            item_name = "THIS ITEM"
+        print('\n',item,'\n'+ item_name +' IS TYPE: ',type(item),'\n')
 
+fake_p_text =  {"status":"REQUEST_SUCCEEDED","responseTime":236,"message":["No Data Available for Series BDS0000000000000000110901LQ5 Year: 2020"],"Results":{
+"series":
+[{"seriesID":"IAMAFAKETHINGAMEBOB","data":[{"year":"1234","period":"Q02","periodName":"2nd Quarter","value":"1179","footnotes":[{}],"calculations":{"net_changes":{"3":"22","6":"-102","12":"-59"},"pct_changes":{"3":"1.9","6":"-8.0","12":"-4.8"}}},{"year":"4567","period":"Q01","periodName":"1st Quarter","value":"1157","footnotes":[{}],"calculations":{"net_changes":{"3":"-124","6":"-39","12":"102"},"pct_changes":{"3":"-9.7","6":"-3.3","12":"9.7"}}}]}]
+}}
 
 REQUIRED_CONFIG_KEYS = ["calculations", "user-id", "api-key", "startyear", "endyear"]
 LOGGER = singer.get_logger()
-
+now = datetime.datetime.now()
 
 # function for finding a file on the system running the tap, relative to the file running the tap.
 def get_abs_path(path):
@@ -41,7 +50,7 @@ def discover():
         # TODO: populate any metadata and stream's key properties here..
         stream_metadata = [{"metadata":{"inclusion":"available","selected":"true"},"breadcrumb":[]}]
         key_properties = ["year"]
-        rep_key = None
+        rep_key = ["year"]
         rep_method = None
         streams.append(
             CatalogEntry(
@@ -62,19 +71,35 @@ def discover():
     return Catalog(streams) # object with class 'singer.catalog.Catalog'
 
 def sync(config, state, catalog):
-    """ Sync data from tap source """
     
+    # whatisthis(state)
+    
+    """ Sync data from tap source """        
     # Loop over selected streams in catalog
+    # pickup_year is the most recent year value in the STATE file
+    
     for stream in catalog.get_selected_streams(state):
-        
-        if stream.stream in state.keys():
-            print("Pick up here and set start year to state year")
-        
+        # whatisthis(state["bookmarks"].keys())
+
+        if stream.stream in state["bookmarks"].keys():
+            try:
+                pickup_year = int(state["bookmarks"][stream.stream]['year'])
+            except:
+                start_year = False
+                year_reset = "There was an error with the year format \""+ state[stream.stream] +"\" in the State file for stream " + str(stream.stream)
+                LOGGER.info(year_reset)
+            else:
+                start_year = int(config['startyear'])
+                if (start_year < pickup_year and pickup_year <= now.year):
+                    config['startyear'] = str(pickup_year)
+                    year_reset = "As per state, resetting start year for stream " + str(stream.stream) + " to " + config['startyear']
+                    LOGGER.info(year_reset)
+                
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
         
         bookmark_column = stream.replication_key
-        is_sorted = True  # TODO: indicate whether data is sorted ascending on bookmark value
-
+        
+        is_sorted = False  # TODO: indicate whether data is sorted ascending on bookmark value
 
         # print('\nSTREAM ID: ',stream.tap_stream_id,'\n')
         # print('\nSCHEMA: ',stream.schema,'\n')
@@ -92,6 +117,8 @@ def sync(config, state, catalog):
             headers = {'Content-type': 'application/json'}
             data = json.dumps(catalog)
             p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
+                  
+            # return(fake_p_text)
             return json.loads(p.text)
         
         fetched_series = [stream.tap_stream_id]
@@ -103,7 +130,8 @@ def sync(config, state, catalog):
         # print('\nLine 84: ',json_data)
         
         ####  End the API call
-        max_bookmark = None        
+        max_bookmark = 0
+        max_year = 0
         utc = pytz.timezone('UTC')
         thetime = utc.localize(datetime.datetime.now())
         thetimeformatted = thetime.astimezone().isoformat()
@@ -116,6 +144,8 @@ def sync(config, state, catalog):
         
             for item in series['data']:
                 year = item['year']
+                if max_year < int(year):
+                    max_year = int(year)
                 period = item['period']
                 if period[0] == 'M':
                     month = int(period[1]+period[2])
@@ -145,7 +175,7 @@ def sync(config, state, catalog):
                         "value": value,
                         "footnotes":footnotes[0:-1],
                         "month": str(month),
-                        "quarter":str(quarter) ,
+                        "quarter":str(quarter),
                         "time_extracted":time_extracted,
                         "full_period":full_period
                         }
@@ -153,19 +183,20 @@ def sync(config, state, catalog):
         
                 # write one or more rows to the stream:
                 singer.write_records(stream.tap_stream_id,[next_row])
-                
                 # capture stream state
                 if bookmark_column:
+                    
                     if is_sorted:
-                        # update bookmark to latest value
-                        singer.write_state({stream.tap_stream_id: row[bookmark_column]})
+                        # update bookmark to latest value - this is redundant for tap-bls
+                        singer.write_state({stream.tap_stream_id: next_row["record"][bookmark_column[0]]})
                     else:
-                        # if data unsorted, save max value until end of writes
-                        max_bookmark = max(max_bookmark, row[bookmark_column])
+                        # if data unsorted, save max value until end of writes.  tap-bls goes by the year and will use this approach
+                        max_bookmark = max(max_bookmark, int(next_row["record"][bookmark_column[0]]))
         if bookmark_column and not is_sorted:
-            singer.write_state({stream.tap_stream_id: max_bookmark})               
-        state_message = {'foo': 'bar'}
-        singer.write_state(state_message)
+            singer.write_state({stream.tap_stream_id: max_bookmark})
+            if config['update_state'].lower() == 'true':  # if you set 'uptadate_state' in config.json the *tap* will update the STATE file - note this is NOT standard behaviour in Singer data flows as the *target* should handle STATE updates.
+                print('\n')
+                LOGGER.info(update_state({stream.tap_stream_id: max_bookmark}))
     return
 
 @utils.handle_top_exception(LOGGER)  # decorates main with exception logging 
