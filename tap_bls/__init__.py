@@ -5,6 +5,8 @@ import datetime     # time and dates functions
 import pytz         # timestamp localization / timezones
 import requests     # http and api calls library
 from .update_state import update_state
+from .client import *
+from .discover import discover
 
 import singer
 from singer import utils, metadata
@@ -26,7 +28,6 @@ fake_p_text =  {"status":"REQUEST_SUCCEEDED","responseTime":236,"message":["No D
 
 REQUIRED_CONFIG_KEYS = ["calculations", "user-id", "api-key", "startyear", "endyear"]
 LOGGER = singer.get_logger()
-now = datetime.datetime.now()
 
 # function for finding a file on the system running the tap, relative to the file running the tap.
 def get_abs_path(path):
@@ -41,45 +42,19 @@ def load_schemas():
         file_raw = filename.replace('.json', '')
         with open(path) as file:
             schemas[file_raw] = Schema.from_dict(json.load(file))
-    return schemas  # returns as object type 'dict'
+    return schemas   # returns a 'dict' that contains <class 'singer.schema.Schema'> objects
 
-def discover():
-    raw_schemas = load_schemas()
-    streams = []
-    for stream_id, schema in raw_schemas.items():
-        # TODO: populate any metadata and stream's key properties here..
-        stream_metadata = [{"metadata":{"inclusion":"available","selected":"true"},"breadcrumb":[]}]
-        key_properties = ["year"]
-        rep_key = ["year"]
-        rep_method = None
-        streams.append(
-            CatalogEntry(
-                tap_stream_id=stream_id,
-                stream=stream_id,
-                key_properties=key_properties,
-                metadata=stream_metadata,
-                replication_key=rep_key,
-                is_view=None,
-                database=None,
-                table=None,
-                row_count=None,
-                stream_alias=None,
-                replication_method=rep_method,
-                schema=schema    
-            )
-        )
-    return Catalog(streams) # object with class 'singer.catalog.Catalog'
-
-def sync(config, state, catalog):
-    
-    # whatisthis(state)
-    
+def sync(config, state, catalog):    
     """ Sync data from tap source """        
     # Loop over selected streams in catalog
     # pickup_year is the most recent year value in the STATE file
+    now = datetime.datetime.now()
     
     for stream in catalog.get_selected_streams(state):
         # whatisthis(state["bookmarks"].keys())
+        whatisthis(stream.schema.additionalProperties)
+        if "annual" in stream.schema.additionalProperties:
+            print("I FOUND ANNUAL")
 
         if stream.stream in state["bookmarks"].keys():
             try:
@@ -101,35 +76,14 @@ def sync(config, state, catalog):
         
         is_sorted = False  # TODO: indicate whether data is sorted ascending on bookmark value
 
-        # print('\nSTREAM ID: ',stream.tap_stream_id,'\n')
-        # print('\nSCHEMA: ',stream.schema,'\n')
-        # print('\nKEY PROPERTIES: ',stream.key_properties,'\n')
-
         singer.write_schema(
             stream_name=stream.tap_stream_id,
-            schema=stream.schema.to_dict(), #the to_dict() bit is a change to the cookiecutter template.
+            schema=stream.schema.to_dict(), #the "to_dict()" bit is a change to the current cookiecutter template.
             key_properties=stream.key_properties,
         )
-
-        ####  SUPER MANUAL CALL STARTS HERE ####       
-                
-        def call_api(catalog):
-            headers = {'Content-type': 'application/json'}
-            data = json.dumps(catalog)
-            p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
-                  
-            # return(fake_p_text)
-            return json.loads(p.text)
         
-        fetched_series = [stream.tap_stream_id]
+        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":config['startyear'], "endyear":config['endyear'],"calculations":config['calculations'],"registrationkey":config['api-key']})
         
-        api_variables = {"seriesid": fetched_series,"startyear":config['startyear'], "endyear":config['endyear'],"calculations":config['calculations'],"registrationkey":config['api-key']}
-        
-        json_data = call_api(api_variables)
-        
-        # print('\nLine 84: ',json_data)
-        
-        ####  End the API call
         max_bookmark = 0
         max_year = 0
         utc = pytz.timezone('UTC')
@@ -137,8 +91,6 @@ def sync(config, state, catalog):
         thetimeformatted = thetime.astimezone().isoformat()
         
         for series in json_data['Results']['series']:
-        
-        
             seriesId = series['seriesID']                
             time_extracted = utc.localize(datetime.datetime.now()).astimezone().isoformat()
         
@@ -205,14 +157,14 @@ def main():
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
-        catalog = discover()
+        catalog = discover(load_schemas())
         catalog.dump()
     # Otherwise run in sync mode
     else:
         if args.catalog:
             catalog = args.catalog
         else:
-            catalog = discover()
+            catalog = discover(load_schemas())
             
         sync(args.config, args.state, catalog)
 
