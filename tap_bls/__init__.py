@@ -195,7 +195,6 @@ def sync(config, state, catalog):
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})
             if config['update_state'].lower() == 'true':  # if you set 'uptadate_state' in config.json the *tap* will update the STATE file - note this is NOT standard behaviour in Singer data flows as the *target* should handle STATE updates.
-                print('\n')
                 LOGGER.info(update_state({stream.tap_stream_id: max_bookmark}))
     return
 
