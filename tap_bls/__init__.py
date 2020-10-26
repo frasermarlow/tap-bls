@@ -52,22 +52,23 @@ def sync(config, state, catalog):
     
     for stream in catalog.get_selected_streams(state):
         # whatisthis(state["bookmarks"].keys())
-        whatisthis(stream.schema.additionalProperties)
+        # whatisthis(stream.schema.additionalProperties)
         if "annual" in stream.schema.additionalProperties:
             print("I FOUND ANNUAL")
-
+        stream_start_year = config['startyear']
+        
         if stream.stream in state["bookmarks"].keys():
             try:
                 pickup_year = int(state["bookmarks"][stream.stream]['year'])
             except:
                 start_year = False
-                year_reset = "There was an error with the year format \""+ state[stream.stream] +"\" in the State file for stream " + str(stream.stream)
+                year_reset = "There was an error with the year format \""+ state[stream.stream] +"\" in the State.json file for stream " + str(stream.stream) + " - pickin up at year " + str(stream_start_year) + "."
                 LOGGER.info(year_reset)
             else:
                 start_year = int(config['startyear'])
                 if (start_year < pickup_year and pickup_year <= now.year):
-                    config['startyear'] = str(pickup_year)
-                    year_reset = "As per state, resetting start year for stream " + str(stream.stream) + " to " + config['startyear']
+                    stream_start_year = str(pickup_year)
+                    year_reset = "As per state, resetting start year for stream " + str(stream.stream) + " to " + stream_start_year
                     LOGGER.info(year_reset)
                 
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
@@ -82,7 +83,7 @@ def sync(config, state, catalog):
             key_properties=stream.key_properties,
         )
         
-        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":config['startyear'], "endyear":config['endyear'],"calculations":config['calculations'],"registrationkey":config['api-key']})
+        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":config['endyear'],"calculations":config['calculations'],"registrationkey":config['api-key']})
         
         max_bookmark = 0
         max_year = 0
