@@ -4,8 +4,10 @@ import json         # parsing json files
 import datetime     # time and dates functions
 import pytz         # timestamp localization / timezones
 import requests     # http and api calls library
+
 from .update_state import update_state
 from .client import *
+from .create_schemas import create_schemas
 from .discover import discover
 
 import singer
@@ -21,11 +23,6 @@ def whatisthis(item):
             item_name = "THIS ITEM"
         print('\n',item,'\n'+ item_name +' IS TYPE: ',type(item),'\n')
 
-fake_p_text =  {"status":"REQUEST_SUCCEEDED","responseTime":236,"message":["No Data Available for Series BDS0000000000000000110901LQ5 Year: 2020"],"Results":{
-"series":
-[{"seriesID":"IAMAFAKETHINGAMEBOB","data":[{"year":"1234","period":"Q02","periodName":"2nd Quarter","value":"1179","footnotes":[{}],"calculations":{"net_changes":{"3":"22","6":"-102","12":"-59"},"pct_changes":{"3":"1.9","6":"-8.0","12":"-4.8"}}},{"year":"4567","period":"Q01","periodName":"1st Quarter","value":"1157","footnotes":[{}],"calculations":{"net_changes":{"3":"-124","6":"-39","12":"102"},"pct_changes":{"3":"-9.7","6":"-3.3","12":"9.7"}}}]}]
-}}
-
 REQUIRED_CONFIG_KEYS = ["calculations", "user-id", "api-key", "startyear", "endyear"]
 LOGGER = singer.get_logger()
 
@@ -36,6 +33,9 @@ def get_abs_path(path):
 # go into the local 'schemas' folder, and pare through all the .json files you find there.
 def load_schemas():
     ### Load schemas from schemas folder ###
+    if len([name for name in os.listdir(get_abs_path('schemas')) if os.path.isfile(os.path.join(get_abs_path('schemas'), name))]) == 0:
+        create_schemas()
+    
     schemas = {}
     for filename in os.listdir(get_abs_path('schemas')):
         path = get_abs_path('schemas') + '/' + filename
@@ -53,8 +53,9 @@ def sync(config, state, catalog):
     for stream in catalog.get_selected_streams(state):
         # whatisthis(state["bookmarks"].keys())
         # whatisthis(stream.schema.additionalProperties)
-        if "annual" in stream.schema.additionalProperties:
-            print("I FOUND ANNUAL")
+        # if "annual" in stream.schema.additionalProperties:
+        #    print("I FOUND ANNUAL")
+            
         stream_start_year = config['startyear']
         
         if stream.stream in state["bookmarks"].keys():
@@ -68,7 +69,7 @@ def sync(config, state, catalog):
                 start_year = int(config['startyear'])
                 if (start_year < pickup_year and pickup_year <= now.year):
                     stream_start_year = str(pickup_year)
-                    year_reset = "As per state, resetting start year for stream " + str(stream.stream) + " to " + stream_start_year
+                    year_reset = "As per state, overriding start year for stream " + str(stream.stream) + " to " + stream_start_year
                     LOGGER.info(year_reset)
                 
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
@@ -96,6 +97,9 @@ def sync(config, state, catalog):
             time_extracted = utc.localize(datetime.datetime.now()).astimezone().isoformat()
         
             for item in series['data']:
+                
+                # whatisthis(item)
+                
                 year = item['year']
                 if max_year < int(year):
                     max_year = int(year)
@@ -106,6 +110,9 @@ def sync(config, state, catalog):
                 elif period[0] == 'Q':
                     month = 0
                     quarter = period[2]
+                elif period[0] == 'A':
+                    month = 0
+                    quarter = 0
                 else:
                     month = ""
                     quater= ""
@@ -147,7 +154,7 @@ def sync(config, state, catalog):
                         max_bookmark = max(max_bookmark, int(next_row["record"][bookmark_column[0]]))
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})
-            if config['update_state'].lower() == 'true':  # if you set 'uptadate_state' in config.json the *tap* will update the STATE file - note this is NOT standard behaviour in Singer data flows as the *target* should handle STATE updates.
+            if (config['update_state'].lower() == 'true') and (stream_start_year == config['startyear']):  # if you set 'uptadate_state' in config.json the *tap* will update the STATE file - note this is NOT standard behaviour in Singer data flows as the *target* should handle STATE updates.
                 LOGGER.info(update_state({stream.tap_stream_id: max_bookmark}))
     return
 
