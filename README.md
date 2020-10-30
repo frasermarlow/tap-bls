@@ -4,17 +4,14 @@ This is a [Singer](https://singer.io) tap that produces JSON-formatted data
 following the [Singer
 spec](https://github.com/singer-io/getting-started/blob/master/SPEC.md).
 
-This tap:
-
-- Pulls raw data from [FIXME](http://example.com)
-- Extracts the following resources:
-  - [FIXME](http://example.com)
-- Outputs the schema for each resource
-- Incrementally pulls data based on the input state
+This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://www.bls.gov/developers/) as follows:
+1) Provides a list of available BLS data series that you can add to your catalog - pick from the list or add your own.
+2) Runs the API to fetch the data series from the BLS and outputs the data to StdOut based on the [Singer.io](http://singer.io) format.
+3) Optionally updates the tap's `STATE.json` file (which is not standard, as the `TARGET.json` typically does this, but this is an option you can set in `CONFIG.json` )
 
 ---
 
-Copyright &copy; 2018 Stitch
+Copyright &copy; 2020 Stitch
 
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
@@ -22,7 +19,7 @@ The BLS provides [an API for pulling data from their records](https://www.bls.go
 
 ## Why is this cool?
 
-Well the BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm) and the most popular data series (a.k.a. "The BLS Greatest Hits!") can be found [here](https://data.bls.gov/cgi-bin/surveymost?bls).
+The BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm) and the most popular data series (a.k.a. "The BLS Greatest Hits!") can be found [here](https://data.bls.gov/cgi-bin/surveymost?bls).
 
 So say you wanted to know the monthly rate at which Americans were quitting their jobs during the 2009/2010 recession you could simply query https://api.bls.gov/publicAPI/v2/timeseries/data/JTS00000000QUR?startyear=2008&endyear=2011  and see that it rapidly dropped from 2.2% in 2007 to a low of 1.3% at the end of 2009.
 
@@ -53,14 +50,16 @@ from [this article](https://www.stitchdata.com/blog/how-to-build-a-singer-tap-in
 > As I begin tap development, I seek to understand the data source API, authentication, endpoints, query parameters (especially sorting and filtering), pagination, error codes, and rate limiting by reading the API documentation and by running REST GET requests with an app like Talend's API Tester. For each of the streams, I record the endpoint URL, query parameters, primary key, bookmark fields, and other metadata in streams.py. I examine the API response formats, nested objects and arrays, and field data types and create a schema.json file for each endpoint.
 
 ## data source API (and limitations thereof)
-Our data source API is [version 2 of the BLS API](https://www.bls.gov/developers/) which requires [registration](https://data.bls.gov/registrationEngine/). 
+Our data source is [version 2 of the BLS API](https://www.bls.gov/developers/) which provides a mechanism for grabbing JSON historical timeseries data. 
 
-If you do not provide an API key, you will be restricted in the volume of data you can pull.  This said, even an authenticated user has limits.
+The API allows for a free [registration](https://data.bls.gov/registrationEngine/). If you do not provide an API key, you will be restricted in the volume of data you can pull.  This said, even an authenticated user has limits.
 
-The API provides a mechanism for grabbing JSON historical timeseries data. The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
+The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
 The API has some 'fair use' limitations outlined [here](https://www.bls.gov/developers/api_faqs.htm#register1) - namely 50 series per query, 500 daily queries, 50 requests per 10 seconds etc.
+
 The BLS data goes back to the year 2000, so any start date prior to 2000-01-01 will default to that date.
-Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit! 
+Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit!
+
 Python is the language of choice for Singer.io taps, we are going to stick with that and [sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).  The BLS provide alternatives in most popular languages.
 
 ## authentication
@@ -72,7 +71,9 @@ URL (JSON):	https://api.bls.gov/publicAPI/v2/timeseries/data/
 Header:	Content-Type= application/json
 
 ## query parameters
-The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request.
+The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request. This said, for the ease of execution we are going to call each series one at a time.  Sure, this eats into our 500 daily queries, but after all this data does not chage often (monthly at most).
+
 ## pagination
+
 ## error codes
 
