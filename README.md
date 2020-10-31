@@ -35,7 +35,35 @@ With this in mind, the tap provides a framework you can use to ingest BLS data u
 You can access BLS data without registering a key but it limits your data access, and keys are free.  So go to the [BLS registration page](https://data.bls.gov/registrationEngine/) and grab a key.
 
 ## config.json
-This tap requires a config file with a single *required* parameter, namely your BLS API key.  
+This tap requires a config file with a single *required* parameter, namely your BLS API key.  This said, it will accept the following parameters:
+
+```
+{
+  "user-id": "your.name@emailprovider.com",
+  "api-key": "your-bls-issued-api-key-goes-here",
+  "startyear": "2019",
+  "endyear": "2020",
+  "calculations": "true",
+  "annualaverage": "false",
+  "aspects": "false",
+  "disable_collection": "true",
+  "update_state": "false"
+}
+```
+
+- *user-id* is optional.  the BLS specifies it but then it's not passed in the API call ¯\\_(ツ)_/¯
+- *api-key* is your BLS issues API key
+- *start year* is the year you want your data extract to start.  Not the limits: you can pull up to 20 years in one go, and most data seris start at 2000, so you do the math...  If left blank it will default to 2000. [ should be a year as a string - i.e. in quote marks ]
+- *endyear* is when you want the series to end.  If left blank it will default to the current year.  [ should be a year as a string - i.e. in quote marks ]
+
+The next three parameters are explained in more detail [on the BLS website](https://www.bls.gov/developers/api_signature_v2.htm#parameters)
+- *calculations* brings in additional data the BLS provides  [will accept "true" or "false"]
+- *annualaverage*  brings in additional data the BLS provides  [will accept "true" or "false"]
+- *aspects*  brings in additional data the BLS provides  [will accept "true" or "false"]
+
+- *disable_collection* should theoretically prevent Singer from collecting additional anonymous data on your runs, which are used to help improve singer.  You can set to "true" if you like, although it appears the additional data is collected either way ¯\\_(ツ)_/¯
+
+- *update_state* is an uncharacteristic feature for a Singer tap.  The *target* should update `STATE` once it know the data has been loaded to the endpoint, but for some side project this tap was designed for, this flag allows you to instruct the `tap` to update `STATE.json` at the end of the run.  So typically you would set this to 'false'.
 
 > tap --config CONFIG [--state STATE] [--catalog CATALOG]
 
