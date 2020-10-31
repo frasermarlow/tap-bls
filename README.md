@@ -57,11 +57,16 @@ This tap requires a config file with a single *required* parameter, namely your 
 - *endyear* is when you want the series to end.  If left blank it will default to the current year.  [ should be a year as a string - i.e. in quote marks ]
 
 The next three parameters are explained in more detail [on the BLS website](https://www.bls.gov/developers/api_signature_v2.htm#parameters)
-- *calculations* brings in additional data the BLS provides  [will accept "true" or "false"]
-- *annualaverage*  brings in additional data the BLS provides  [will accept "true" or "false"]
-- *aspects*  brings in additional data the BLS provides  [will accept "true" or "false"]
+**THESE PARAMETERS HAVE NOT BEEN IMPLEMENTED AS OF YET AND WILL BE IGNORED!**
+Parameter |  description |  values accepted
+----------|--------------|-----------------
+*calculations*  | brings in additional data the BLS provides |   will accept "true" or "false"
+*annualaverage* | brings in additional data the BLS provides |   will accept "true" or "false"
+*aspects*       | brings in additional data the BLS provides |   will accept "true" or "false"
+
 
 - *disable_collection* should theoretically prevent Singer from collecting additional anonymous data on your runs, which are used to help improve singer.  You can set to "true" if you like, although it appears the additional data is collected either way ¯\\_(ツ)_/¯
+
 
 - *update_state* is an uncharacteristic feature for a Singer tap.  The *target* should update `STATE` once it know the data has been loaded to the endpoint, but for some side project this tap was designed for, this flag allows you to instruct the `tap` to update `STATE.json` at the end of the run.  So typically you would set this to 'false'.
 
