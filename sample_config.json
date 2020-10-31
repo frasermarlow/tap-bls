@@ -1,6 +1,11 @@
 {
-	"user-id": "your.name@emailprovider.com",
-	"api-key": "your-bls-issued-api-key-goes-here",
-	"startyear": "2019",
-	"endyear": "2020"
+  "user-id": "your.name@emailprovider.com",
+  "api-key": "your-bls-issued-api-key-goes-here",
+  "startyear": "2009",
+  "endyear": "2020",
+  "calculations": "true",
+  "annualaverage": "false",
+  "aspects": "false",
+  "disable_collection": "true",
+  "update_state": "false"
 }

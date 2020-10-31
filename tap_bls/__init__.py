@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+
 import os
 import json         # parsing json files
 import datetime     # time and dates functions
 import pytz         # timestamp localization / timezones
-import requests     # http and api calls library
+import requests     # http and api calls library  TODO: Can this be removed here?
 
-from .update_state import update_state
+from .update_state import generate_state, update_state
 from .client import *
 from .create_schemas import create_schemas
 from .discover import discover
@@ -23,19 +24,27 @@ def whatisthis(item):
             item_name = "THIS ITEM"
         print('\n',item,'\n'+ item_name +' IS TYPE: ',type(item),'\n')
 
+
+# TO DO:  This should be able to accept just api-key and then set defaults for all the others.
 REQUIRED_CONFIG_KEYS = ["calculations", "user-id", "api-key", "startyear", "endyear"]
+
+
 LOGGER = singer.get_logger()
 
 # function for finding a file on the system running the tap, relative to the file running the tap.
 def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
 
+
 # go into the local 'schemas' folder, and pare through all the .json files you find there.
 def load_schemas():
     ### Load schemas from schemas folder ###
+    
+    # If no schemas are found in the /schemas/ folder, then generate them using create_schemas.py
     if len([name for name in os.listdir(get_abs_path('schemas')) if os.path.isfile(os.path.join(get_abs_path('schemas'), name))]) == 0:
         create_schemas()
     
+    # now grab the .json files in /schemas/ and output the catalog.json file.
     schemas = {}
     for filename in os.listdir(get_abs_path('schemas')):
         path = get_abs_path('schemas') + '/' + filename
@@ -44,7 +53,9 @@ def load_schemas():
             schemas[file_raw] = Schema.from_dict(json.load(file))
     return schemas   # returns a 'dict' that contains <class 'singer.schema.Schema'> objects
 
-def sync(config, state, catalog):    
+
+def sync(config, state, catalog):
+    
     """ Sync data from tap source """        
     # Loop over selected streams in catalog
     # pickup_year is the most recent year value in the STATE file
@@ -57,20 +68,21 @@ def sync(config, state, catalog):
         #    print("I FOUND ANNUAL")
             
         stream_start_year = config['startyear']
-        
-        if stream.stream in state["bookmarks"].keys():
-            try:
-                pickup_year = int(state["bookmarks"][stream.stream]['year'])
-            except:
-                start_year = False
-                year_reset = "There was an error with the year format \""+ state[stream.stream] +"\" in the State.json file for stream " + str(stream.stream) + " - pickin up at year " + str(stream_start_year) + "."
-                LOGGER.info(year_reset)
-            else:
-                start_year = int(config['startyear'])
-                if (start_year < pickup_year and pickup_year <= now.year):
-                    stream_start_year = str(pickup_year)
-                    year_reset = "As per state, overriding start year for stream " + str(stream.stream) + " to " + stream_start_year
+
+        if "bookmarks" in state.keys():
+            if stream.stream in state["bookmarks"].keys():
+                try:
+                    pickup_year = int(state["bookmarks"][stream.stream]['year'])
+                except:
+                    start_year = False
+                    year_reset = "There was an error with the year format \""+ state[stream.stream] +"\" in the State.json file for stream " + str(stream.stream) + " - pickin up at year " + str(stream_start_year) + "."
                     LOGGER.info(year_reset)
+                else:
+                    start_year = int(config['startyear'])
+                    if (start_year < pickup_year and pickup_year <= now.year):
+                        stream_start_year = str(pickup_year)
+                        year_reset = "As per state, overriding start year for stream " + str(stream.stream) + " to " + stream_start_year
+                        LOGGER.info(year_reset)
                 
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
         
@@ -158,11 +170,17 @@ def sync(config, state, catalog):
                 LOGGER.info(update_state({stream.tap_stream_id: max_bookmark}))
     return
 
+
 @utils.handle_top_exception(LOGGER)  # decorates main with exception logging 
 def main():
     # Parse command line arguments
     args = utils.parse_args(REQUIRED_CONFIG_KEYS)
-
+    
+    if len(args.state) == 0:    # if no state was provided
+        has_state = generate_state()        # ... generate one
+    else:
+        has_state = True
+        
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
         catalog = discover(load_schemas())
@@ -174,7 +192,8 @@ def main():
         else:
             catalog = discover(load_schemas())
             
-        sync(args.config, args.state, catalog)
+        sync(args.config, args.state, catalog)  # run the synch
+
 
 # if this file is being called as the main program, execute the function main().
 if __name__ == "__main__":
