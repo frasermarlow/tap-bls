@@ -3,49 +3,26 @@
 # Due to the nature of this tap, there are hundreds (if not thousands) if possible sources ("series") you migth want to pull from the Bureau of labor statistics databases.  The purpose of this script is to let you create all the /tap-bls/tap_bls/schema json files you need for your purpose.  Just add or remove the series from the list, then run this script.
 # fraser marlow - Nov 2020
 
-schemas_to_create = [
-    {
-        "seriesid":"EIUIR",
-        "frequency":"monthly",
-        "description":"Imports - All Commodities",
-        "create_this_schema":True
-    },{
-        "seriesid":"EIUIQ",
-        "frequency":"monthly",
-        "description":"Exports - All Commodities",
-        "create_this_schema":True
-        },
-{"seriesid":"MPU4910012","frequency":"annual","description":"Private Nonfarm Business - Multifactor Productivity annual index","create_this_schema":True},
-{"seriesid":"PRS85006092","frequency":"quarterly","description":"Output Per Hour - Non-farm Business Productivity","create_this_schema":True},
-{"seriesid":"CES0000000001","frequency":"monthly","description":"Total Nonfarm Employment - Seasonally Adjusted","create_this_schema":True},
-{"seriesid":"CES0500000002","frequency":"monthly","description":"Total Private Average Weekly Hours of All Employees - Seasonally Adjusted","create_this_schema":True},
-{"seriesid":"CES0500000007","frequency":"monthly","description":"Total Private Average Weekly Hours of Prod. and Nonsup. Employees - Seasonally Adjusted","create_this_schema":True},
-{"seriesid":"CES0500000003","frequency":"monthly","description":"Total Private Average Hourly Earnings of All Employees - Seasonally Adjusted","create_this_schema":True},
-{"seriesid":"CES0500000008","frequency":"monthly","description":"Total Private Average Hourly Earnings of Prod. and Nonsup. Employees - Seasonally Adjusted","create_this_schema":True},
-{"seriesid":"LNS11000000","frequency":"monthly","description":"Civilian Labor Force (Seasonally Adjusted)","create_this_schema":True},
-{"seriesid":"LNS12000000","frequency":"monthly","description":"Civilian Employment (Seasonally Adjusted)","create_this_schema":True},
-{"seriesid":"LNS13000000","frequency":"monthly","description":"Civilian Unemployment (Seasonally Adjusted)","create_this_schema":True},
-{"seriesid":"LNS14000000","frequency":"monthly","description":"Unemployment Rate (Seasonally Adjusted)","create_this_schema":True},
-{"seriesid":"PRS85006112","frequency":" quarterly ","description":"Nonfarm Business Unit Labor Costs","create_this_schema":True},
-{"seriesid":"PRS85006152","frequency":" quarterly ","description":"Nonfarm Business Real Hourly Compensation","create_this_schema":True},
-{"seriesid":"CUUR0000SA0","frequency":"monthly","description":"CPI for All Urban Consumers (CPI-U) 1982-84=100 (Unadjusted)","create_this_schema":True},
-{"seriesid":"CUUR0000AA0","frequency":"monthly","description":"CPI for All Urban Consumers (CPI-U) 1967=100 (Unadjusted)","create_this_schema":True},
-{"seriesid":"CWUR0000SA0","frequency":"monthly","description":"CPI for Urban Wage Earners and Clerical Workers (CPI-W) 1982-84=100 (Unadjusted)","create_this_schema":True},
-{"seriesid":"CUUR0000SA0L1E","frequency":"monthly","description":"CPI-U/Less Food and Energy (Unadjusted)","create_this_schema":True},
-{"seriesid":"CWUR0000SA0L1E","frequency":"monthly","description":"CPI-W/Less Food and Energy (Unadjusted)","create_this_schema":True},
-{"seriesid":"WPSFD4","frequency":"monthly","description":"PPI Final Demand (Seasonally Adjusted)","create_this_schema":True},
-{"seriesid":"WPUFD4","frequency":"monthly","description":"PPI Final Demand (Unadjusted)","create_this_schema":True},
-{"seriesid":"WPUFD49104","frequency":"monthly","description":"PPI Final Demand less foods and energy (Unadjusted)","create_this_schema":True},
-{"seriesid":"WPUFD49116","frequency":"monthly","description":"PPI Final Demand less foods energy and trade services (Unadjusted)","create_this_schema":True},
-{"seriesid":"WPUFD49207","frequency":"monthly","description":"PPI Finished Goods 1982=100 (Unadjusted)","create_this_schema":True},
-{"seriesid":"CIU1010000000000A","frequency":"quarterly","description":"Employment Cost Index (ECI) Civilian (Unadjusted)","create_this_schema":True},
-{"seriesid":"CIU2010000000000A","frequency":"quarterly","description":"ECI Private (Unadjusted)","create_this_schema":True},
-{"seriesid":"CIU2020000000000A","frequency":" quarterly ","description":"ECI Private Wage and Salaries (Unadjusted)","create_this_schema":True}
-]
-
 import sys
 import json         # parsing json files
 import os
+from os import path
+
+import singer
+from singer.schema import Schema
+
+def get_series_list():
+    series_to_create = {}
+    
+    series_list = sys.argv[sys.argv.index('--config')+1].rsplit('/', 1)[0]+"/series.json"
+    
+    if not path.exists(series_list):
+        print("I could not locate file " + series_list)
+    else:
+        with open(series_list, "r") as jsonFile:
+            series_to_create = json.load(jsonFile)
+    
+    return series_to_create
 
 import singer
 from singer import utils, metadata
@@ -66,7 +43,9 @@ def write_schema_to_file(series, schema_location):
     return
 
 def create_schemas():
-    for series in schemas_to_create:
+    schemas_to_create = get_series_list()
+    print(schemas_to_create['series'], " | ", type(schemas_to_create))
+    for series in schemas_to_create['series']:
         if series['create_this_schema']:
             schema_json = {
                     "type": ["null", "object"],
