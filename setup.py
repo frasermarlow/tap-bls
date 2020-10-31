@@ -11,9 +11,9 @@ setup(
     py_modules=["tap_bls"],
     install_requires=[
         # NB: Pin these to a more specific version for tap reliability
-        "singer-python",
-        "requests",
-        "PTable"
+        "singer-python==5.9.0",
+        "singer-tools==0.4.1",
+        "requests==2.20.0"
     ],
     entry_points="""
     [console_scripts]
