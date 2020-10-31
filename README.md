@@ -34,6 +34,31 @@ With this in mind, the tap provides a framework you can use to ingest BLS data u
 ## Grab a key
 You can access BLS data without registering a key but it limits your data access, and keys are free.  So go to the [BLS registration page](https://data.bls.gov/registrationEngine/) and grab a key.
 
+
+## data source API (and limitations thereof)
+Our data source is [version 2 of the BLS API](https://www.bls.gov/developers/) which provides a mechanism for grabbing JSON historical timeseries data. 
+
+The API allows for a free [registration](https://data.bls.gov/registrationEngine/). If you do not provide an API key, you will be restricted in the volume of data you can pull.  This said, even an authenticated user has limits.
+
+The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
+The API has some 'fair use' limitations outlined [here](https://www.bls.gov/developers/api_faqs.htm#register1) - namely 50 series per query, 500 daily queries, 50 requests per 10 seconds etc.
+
+The BLS data goes back to the year 2000, so any start date prior to 2000-01-01 will default to that date.
+Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit!
+
+Python is the language of choice for Singer.io taps, we are going to stick with that and [sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).  The BLS provide alternatives in most popular languages.
+
+### authentication
+Authentication is through an API key which is free to get but requires [registration](https://data.bls.gov/registrationEngine/).
+
+### endpoints
+HTTP Type:	POST
+URL (JSON):	https://api.bls.gov/publicAPI/v2/timeseries/data/
+Header:	Content-Type= application/json
+
+### query parameters
+The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request. This said, for the ease of execution we are going to call each series one at a time.  Sure, this eats into our 500 daily queries, but after all this data does not chage often (monthly at most).
+
 ## config.json
 This tap requires a config file with a single *required* parameter, namely your BLS API key.  This said, it will accept the following parameters:
 
@@ -72,39 +97,17 @@ Parameter |  description |  values accepted
 
 > tap --config CONFIG [--state STATE] [--catalog CATALOG]
 
-STATE and CATALOG are optional arguments both pointing to their own JSON file.
+STATE and CATALOG are optional arguments both pointing to their own JSON file.  If you do not specify a `state.json` file the tap will generate one in the same folder at the `config.json` file. tap-bls will use `STATE.json` to remember information from the previous invocation such as the point where it left off, namely the year of the most recent data point.
 
-tap-bls will use STATE remember information from the previous invocation such as the point where it left off.
-The BLS offers many data sources; CATALOG is used to filter which streams should be synced.
+## Autogenerating the SCHEMAs
+The BLS offers many data sources; Typically, CATALOG.json is used to filter which streams should be synced from all the streams available in the /schemas/ folder.  
+tap-bls behaves a bit differently because of the enormous number of potential data series you migth pull from the BLS.  Therefore it works as follows:
+1) If no `.json` schema files are to be found in the `tap_bls/schemas/` folder, the tap will generate them for you based on the `series.json` file.  The tap will look for the `series.json` file in the same folder as your `config.json` file.  This allows you to rapidly select which BLS data series you want to work with.
+2) Once you have a set of schema files created (manually or using the automated approach above) you can generate the Singer `catalog.json` file using the tap's --discover mode using a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json``` (your set up may use a different folder than 'tap-bls-config' - that is up to you.)
 
-----------------------------------------------------------------------------------------------------------
 
-from [this article](https://www.stitchdata.com/blog/how-to-build-a-singer-tap-infographic/)
-> As I begin tap development, I seek to understand the data source API, authentication, endpoints, query parameters (especially sorting and filtering), pagination, error codes, and rate limiting by reading the API documentation and by running REST GET requests with an app like Talend's API Tester. For each of the streams, I record the endpoint URL, query parameters, primary key, bookmark fields, and other metadata in streams.py. I examine the API response formats, nested objects and arrays, and field data types and create a schema.json file for each endpoint.
 
-## data source API (and limitations thereof)
-Our data source is [version 2 of the BLS API](https://www.bls.gov/developers/) which provides a mechanism for grabbing JSON historical timeseries data. 
 
-The API allows for a free [registration](https://data.bls.gov/registrationEngine/). If you do not provide an API key, you will be restricted in the volume of data you can pull.  This said, even an authenticated user has limits.
-
-The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
-The API has some 'fair use' limitations outlined [here](https://www.bls.gov/developers/api_faqs.htm#register1) - namely 50 series per query, 500 daily queries, 50 requests per 10 seconds etc.
-
-The BLS data goes back to the year 2000, so any start date prior to 2000-01-01 will default to that date.
-Also the BLS have imposed a maximum of 20 years in the query.  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit!
-
-Python is the language of choice for Singer.io taps, we are going to stick with that and [sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).  The BLS provide alternatives in most popular languages.
-
-## authentication
-Authentication is through an API key which is free to get but requires [registration](https://data.bls.gov/registrationEngine/).
-
-## endpoints
-HTTP Type:	POST
-URL (JSON):	https://api.bls.gov/publicAPI/v2/timeseries/data/
-Header:	Content-Type= application/json
-
-## query parameters
-The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request. This said, for the ease of execution we are going to call each series one at a time.  Sure, this eats into our 500 daily queries, but after all this data does not chage often (monthly at most).
 
 ## pagination
 
