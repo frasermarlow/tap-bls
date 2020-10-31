@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import os
 import json         # parsing json files
 import datetime     # time and dates functions
@@ -24,9 +25,7 @@ def whatisthis(item):
             item_name = "THIS ITEM"
         print('\n',item,'\n'+ item_name +' IS TYPE: ',type(item),'\n')
 
-
-# TO DO:  This should be able to accept just api-key and then set defaults for all the others.
-REQUIRED_CONFIG_KEYS = ["calculations", "user-id", "api-key", "startyear", "endyear"]
+REQUIRED_CONFIG_KEYS = ["api-key"]
 
 
 LOGGER = singer.get_logger()
@@ -66,9 +65,33 @@ def sync(config, state, catalog):
         # whatisthis(stream.schema.additionalProperties)
         # if "annual" in stream.schema.additionalProperties:
         #    print("I FOUND ANNUAL")
+        
+        if "startyear" in config.keys():
+            stream_start_year = config['startyear']
+        else:
+            stream_start_year = "2000"
+        
+        if "endyear" in config.keys():
+            stream_end_year = config['endyear']
+        else:
+            stream_end_year = now.year
+        
+        if "calculations" in config.keys():
+            stream_calculations = config['calculations']
+        else:
+            stream_calculations = "False"
             
-        stream_start_year = config['startyear']
-
+        if "annualaverage" in config.keys():
+            stream_annualaverage = config['annualaverage']
+        else:
+            stream_annualaverage = "False"
+            
+        if "aspects" in config.keys():
+            stream_aspects = config['aspects']
+        else:
+            stream_aspects = "False"
+   
+        # check if the STATE.json requests a more recent start date
         if "bookmarks" in state.keys():
             if stream.stream in state["bookmarks"].keys():
                 try:
@@ -96,7 +119,7 @@ def sync(config, state, catalog):
             key_properties=stream.key_properties,
         )
         
-        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":config['endyear'],"calculations":config['calculations'],"registrationkey":config['api-key']})
+        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":stream_end_year,"calculations":stream_calculations,"annualaverage":stream_annualaverage,"aspects":stream_aspects,"registrationkey":config['api-key']})
         
         max_bookmark = 0
         max_year = 0
@@ -174,8 +197,12 @@ def sync(config, state, catalog):
 @utils.handle_top_exception(LOGGER)  # decorates main with exception logging 
 def main():
     # Parse command line arguments
-    args = utils.parse_args(REQUIRED_CONFIG_KEYS)
-    
+    try:
+        args = utils.parse_args(REQUIRED_CONFIG_KEYS)
+    except FileNotFoundError:
+        LOGGER.info("One of the files you specified can't be found...  check you have catalog.json, state.json and config.json at the locations you specified.")
+        sys.exit(0)
+
     if len(args.state) == 0:    # if no state was provided
         has_state = generate_state()        # ... generate one
     else:
