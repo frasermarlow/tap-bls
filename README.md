@@ -124,3 +124,8 @@ tap-bls behaves a bit differently because of the enormous number of potential da
 
 ## error codes
 
+
+# Open questions and to-dos
+
+LNU02033224 - has 13 months of data for 2012?
+
