@@ -13,6 +13,16 @@ This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://
 
 Copyright &copy; 2020 Stitch
 
+## Installation quickguide
+1) Create a virtual environment
+2) Install the tap in your venv using `pip install tap-bls`  # THIS WILL BE TRUE ONCE THIS IS PACKAGED UP! FOR NOW JUST CLONE THE REPO
+3) make a copy of `config.json` and `series.json` into your preferred configuration folder (for example I use `~/tap-bls-config`) 
+4) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
+5) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
+6) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` but if you have `tap-csv` file installed you can make pretty outputs using ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
+
+You can use a `--state` file if you like.
+
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
 The BLS provides [an API for pulling data from their records](https://www.bls.gov/data/#api), and [Singer.io](https://www.singer.io/) is a common framework for building data flows.
@@ -100,7 +110,8 @@ Parameter |  description |  values accepted
 STATE and CATALOG are optional arguments both pointing to their own JSON file.  If you do not specify a `state.json` file the tap will generate one in the same folder at the `config.json` file. tap-bls will use `STATE.json` to remember information from the previous invocation such as the point where it left off, namely the year of the most recent data point.
 
 ## Autogenerating the SCHEMAs
-The BLS offers many data sources; Typically, CATALOG.json is used to filter which streams should be synced from all the streams available in the /schemas/ folder.  
+Typically, the file `CATALOG.json` (generated during discovery) is used to filter which streams should be synced from all the possible streams available in the /schemas/ folder.  
+
 tap-bls behaves a bit differently because of the enormous number of potential data series you migth pull from the BLS.  Therefore it works as follows:
 1) If no `.json` schema files are to be found in the `tap_bls/schemas/` folder, the tap will generate them for you based on the `series.json` file.  The tap will look for the `series.json` file in the same folder as your `config.json` file.  This allows you to rapidly select which BLS data series you want to work with.
 2) Once you have a set of schema files created (manually or using the automated approach above) you can generate the Singer `catalog.json` file using the tap's --discover mode using a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json``` (your set up may use a different folder than 'tap-bls-config' - that is up to you.)
