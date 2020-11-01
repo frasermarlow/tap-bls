@@ -75,11 +75,3 @@ deactivate
 # run the tap
 
 ~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json | ~/.virtualenvs/target-csv/bin/target-csv
-
-
-Google Sheets API key:
-AIzaSyCvTSJ08CKxpExrbk_itQTWQ8kf1UGqj7M
-
-
-
-printf '{"type":"SCHEMA", "stream":"hello","key_properties":[],"schema":{"type":"object", "properties":{"value":{"type":"string"},"name":{"type":"string"},"score":{"type":"integer"}}}}\n{"type":"RECORD","stream":"hello","schema":"hello","record":{"value":"world","name":"james","score":12}}\n{"type":"RECORD","stream":"hello","schema":"hello","record":{"value":"fraser1","name":"bond","score":7}}\n' | ~/.virtualenvs/target-csv/bin/target-csv
