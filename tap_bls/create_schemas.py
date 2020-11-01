@@ -69,4 +69,4 @@ def create_schemas():
             schema_file = series['seriesid'] + ".json"
             schema_location = get_abs_path('schemas') + "/" + schema_file
             
-            print(write_schema_to_file(schema_json,schema_location))
+            write_schema_to_file(schema_json,schema_location)
