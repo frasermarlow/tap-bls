@@ -11,7 +11,7 @@ from os import path
 import singer
 from singer.schema import Schema
 
-def get_series_list():
+def get_series_list():  # fetches the array of series to create from /series.json in the config folder
     series_to_create = {}
     
     series_list = sys.argv[sys.argv.index('--config')+1].rsplit('/', 1)[0]+"/series.json"
@@ -21,7 +21,7 @@ def get_series_list():
     else:
         with open(series_list, "r") as jsonFile:
             series_to_create = json.load(jsonFile)
-    
+
     return series_to_create
 
 import singer
@@ -44,9 +44,8 @@ def write_schema_to_file(series, schema_location):
 
 def create_schemas():
     schemas_to_create = get_series_list()
-    print(schemas_to_create['series'], " | ", type(schemas_to_create))
     for series in schemas_to_create['series']:
-        if series['create_this_schema']:
+        if str(series['create_this_schema'].lower()) == "true":
             schema_json = {
                     "type": ["null", "object"],
                     "additionalProperties":["schema", "record", "type", "stream", series['frequency']],

@@ -38,15 +38,21 @@ def get_abs_path(path):
 # go into the local 'schemas' folder, and pare through all the .json files you find there.
 def load_schemas():
     ### Load schemas from schemas folder ###
+    schemas = {}
+    schemas_path = get_abs_path('schemas')
     
+    # If the '/schemas/ folder is missing, create it.
+    if not os.path.isdir(schemas_path):
+        os.mkdir(schemas_path)
+
     # If no schemas are found in the /schemas/ folder, then generate them using create_schemas.py
-    if len([name for name in os.listdir(get_abs_path('schemas')) if os.path.isfile(os.path.join(get_abs_path('schemas'), name))]) == 0:
+    if len([name for name in os.listdir(schemas_path) if os.path.isfile(os.path.join(schemas_path, name))]) == 0:
         create_schemas()
     
     # now grab the .json files in /schemas/ and output the catalog.json file.
-    schemas = {}
-    for filename in os.listdir(get_abs_path('schemas')):
-        path = get_abs_path('schemas') + '/' + filename
+
+    for filename in os.listdir(schemas_path):
+        path = schemas_path + '/' + filename
         file_raw = filename.replace('.json', '')
         with open(path) as file:
             schemas[file_raw] = Schema.from_dict(json.load(file))
@@ -71,11 +77,14 @@ def sync(config, state, catalog):
         else:
             stream_start_year = "2000"
         
-        if "endyear" in config.keys():
-            stream_end_year = config['endyear']
+        if ("endyear" in config.keys()) and (len(config['endyear']) > 3):
+            try:
+                stream_end_year = config['endyear'] if int(config['endyear']) > 1999 else now.year
+            except:
+                stream_end_year = now.year
         else:
             stream_end_year = now.year
-        
+
         if "calculations" in config.keys():
             stream_calculations = config['calculations']
         else:
@@ -92,8 +101,8 @@ def sync(config, state, catalog):
             stream_aspects = "False"
    
         # check if the STATE.json requests a more recent start date
-        if "bookmarks" in state.keys():
-            if stream.stream in state["bookmarks"].keys():
+        if "bookmarks" in state.keys():                     # check the state even has bookmarks...
+            if stream.stream in state["bookmarks"].keys():  # if this stream as an entry in the state.json file...
                 try:
                     pickup_year = int(state["bookmarks"][stream.stream]['year'])
                 except:
@@ -115,7 +124,7 @@ def sync(config, state, catalog):
 
         singer.write_schema(
             stream_name=stream.tap_stream_id,
-            schema=stream.schema.to_dict(), #the "to_dict()" bit is a change to the current cookiecutter template.
+            schema=stream.schema.to_dict(), #the "to_dict()" bit is a change to the current cookiecutter template on Github.
             key_properties=stream.key_properties,
         )
         
