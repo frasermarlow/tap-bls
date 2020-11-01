@@ -31,7 +31,7 @@ The BLS provides [an API for pulling data from their records](https://www.bls.go
 
 The BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm) and the most popular data series (a.k.a. "The BLS Greatest Hits!") can be found [here](https://data.bls.gov/cgi-bin/surveymost?bls).
 
-So say you wanted to know the monthly rate at which Americans were quitting their jobs during the 2009/2010 recession you could simply query https://api.bls.gov/publicAPI/v2/timeseries/data/JTS00000000QUR?startyear=2008&endyear=2011  and see that it rapidly dropped from 2.2% in 2007 to a low of 1.3% at the end of 2009.
+So say you wanted to know the trend for unemployment during the COVID-19 pandemic of 2020 you could simply [query the API](https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2019&endyear=2020) and see that it rapidly rose from from 3.5% at the end of 2019 to a high of 14.7% in April 2020.
 
 ## What does the tap provide
 
