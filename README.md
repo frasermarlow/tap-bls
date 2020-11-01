@@ -95,7 +95,7 @@ The next three parameters are explained in more detail [on the BLS website](http
 **THESE PARAMETERS HAVE NOT BEEN IMPLEMENTED AS OF YET AND WILL BE IGNORED!**
 Parameter |  description |  values accepted
 ----------|--------------|-----------------
-*calculations*  | brings in additional data the BLS provides |   will accept "true" or "false"
+*calculations*  | provides 1,3,6 and 12 month changes in the data in both net and percentage format |   will accept "true" or "false"
 *annualaverage* | brings in additional data the BLS provides |   will accept "true" or "false"
 *aspects*       | brings in additional data the BLS provides |   will accept "true" or "false"
 
