@@ -128,9 +128,13 @@ tap-bls behaves a bit differently because of the enormous number of potential da
 # Open questions and to-dos
 
 TEST SERIES:
+
 CES0000000001 - Monthly series without annual average
+
 WPUFD49104 - Monthly series with annual average
+
 PRS85006092 - Quarterly series with annual average
+
 MPU4910012 - annual series
 
 LNU02033224 - has 13 months of data each year?  (M13, Q05, and S03 indicate annual averages, but not every data series provides these?)
