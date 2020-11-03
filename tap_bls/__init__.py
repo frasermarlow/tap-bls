@@ -67,10 +67,10 @@ def sync(config, state, catalog):
     now = datetime.datetime.now()
     
     for stream in catalog.get_selected_streams(state):
-        # whatisthis(state["bookmarks"].keys())
-        # whatisthis(stream.schema.additionalProperties)
-        # if "annual" in stream.schema.additionalProperties:
-        #    print("I FOUND ANNUAL")
+        
+        LOGGER.info("Syncing stream:" + stream.tap_stream_id)
+        bookmark_column = stream.replication_key
+        is_sorted = False  # TODO: indicate whether data is sorted ascending on bookmark value
         
         if "startyear" in config.keys():
             stream_start_year = config['startyear']
@@ -115,20 +115,43 @@ def sync(config, state, catalog):
                         stream_start_year = str(pickup_year)
                         year_reset = "As per state, overriding start year for stream " + str(stream.stream) + " to " + stream_start_year
                         LOGGER.info(year_reset)
-                
-        LOGGER.info("Syncing stream:" + stream.tap_stream_id)
         
-        bookmark_column = stream.replication_key
+        # make the call
+        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":stream_end_year,"calculations":stream_calculations,"annualaverage":stream_annualaverage,"aspects":stream_aspects,"registrationkey":config['api-key']})
         
-        is_sorted = False  # TODO: indicate whether data is sorted ascending on bookmark value
-
+        raw_schema = stream.schema.to_dict()
+        
+        series_frequency = json_data['Results']['series'][0]['data'][0]['period'][0] # assigns 'A' for annual, 'Q' for quarterly and 'M' for monthly.
+        
+        if series_frequency == "A":
+            raw_schema['properties']['year'] = {"type":["null","integer"]}
+        if series_frequency == "Q":
+            raw_schema['properties']['quarter'] = {"type":["null","integer"]}
+            raw_schema['properties']['year'] = {"type":["null","integer"]}
+        if series_frequency == "M":
+            raw_schema['properties']['month'] = {"type":["null","integer"]}
+        
+        if ("calculations" in config.keys()) and (config['calculations'].lower() == "true"):
+            raw_schema['properties']['net_change_1'] = {"type":["null","number"]}
+            raw_schema['properties']['net_change_3'] = {"type":["null","number"]}
+            raw_schema['properties']['net_change_6'] = {"type":["null","number"]}
+            raw_schema['properties']['net_change_12'] = {"type":["null","number"]}
+            raw_schema['properties']['pct_change_1'] = {"type":["null","number"]}
+            raw_schema['properties']['pct_change_3'] = {"type":["null","number"]}
+            raw_schema['properties']['pct_change_6'] = {"type":["null","number"]}
+            raw_schema['properties']['pct_change_12'] = {"type":["null","number"]}
+        
+        if ("aspects" in config.keys()) and (config['aspects'].lower() == "true"):
+            raw_schema['properties']['aspects'] = {"type":["null","string"]}
+            
+        if ("annualaverage" in config.keys()) and (config['annualaverage'].lower() == "true"):
+            raw_schema['properties']['annualaverage'] = {"type":["null","number"]}
+        
         singer.write_schema(
             stream_name=stream.tap_stream_id,
-            schema=stream.schema.to_dict(), #the "to_dict()" bit is a change to the current cookiecutter template on Github.
+            schema=raw_schema, #the "to_dict()" bit is a change to the current cookiecutter template on Github.
             key_properties=stream.key_properties,
         )
-        
-        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":stream_end_year,"calculations":stream_calculations,"annualaverage":stream_annualaverage,"aspects":stream_aspects,"registrationkey":config['api-key']})
         
         max_bookmark = 0
         max_year = 0
@@ -140,10 +163,7 @@ def sync(config, state, catalog):
             seriesId = series['seriesID']                
             time_extracted = utc.localize(datetime.datetime.now()).astimezone().isoformat()
         
-            for item in series['data']:
-                
-                # whatisthis(item)
-                
+            for item in series['data']:                
                 year = item['year']
                 if max_year < int(year):
                     max_year = int(year)
@@ -161,6 +181,16 @@ def sync(config, state, catalog):
                     month = ""
                     quater= ""
                 value = item['value']
+                
+                
+                # if series_frequency == "A":
+                #    next_row['year'] = item['something']
+                # if series_frequency == "Q":
+                #    next_row['quarter'] = item['something']
+                #    next_row['year'] = item['something']
+                # if series_frequency == "M":
+                #    next_row['month'] = item['something']
+                
                 full_period = str(year) + "-" + str("{0:0=2d}".format(month)) + "-01T00:00:00-04:00"
                 footnotes=""
                 for footnote in item['footnotes']:
@@ -172,6 +202,7 @@ def sync(config, state, catalog):
                     "stream": seriesId,
                     "time_extracted": time_extracted,
                     "schema":seriesId,
+                    "frequency":series_frequency,
                     "record":{
                         "SeriesID": seriesId,
                         "year": year,
@@ -184,6 +215,36 @@ def sync(config, state, catalog):
                         "full_period":full_period
                         }
                     }
+              
+                
+                if ("calculations" in config.keys()) and (config['calculations'].lower() == "true"):
+                    if ("calculations" in item.keys()):
+                        if ("net_changes" in item["calculations"].keys()):
+                            next_row['net_change_1'] = float(item['calculations']['net_changes']['1']) if '1' in item['calculations']['net_changes'].keys() else None
+                            next_row['net_change_3'] = float(item['calculations']['net_changes']['3'])  if '3' in item['calculations']['net_changes'].keys() else None
+                            next_row['net_change_6'] = float(item['calculations']['net_changes']['6'])  if '6' in item['calculations']['net_changes'].keys() else None
+                            next_row['net_change_12'] = float(item['calculations']['net_changes']['12'])  if '12' in item['calculations']['net_changes'].keys() else None
+                        else:
+                            next_row['net_change_1'] = next_row['net_change_3'] = next_row['net_change_6'] = next_row['net_change_12'] = None
+                        
+                        if ("net_changes" in item["calculations"].keys()):
+                            next_row['pct_change_1'] = float(item['calculations']['pct_changes']['1']) if '1' in item['calculations']['pct_changes'].keys() else None
+                            next_row['pct_change_3'] = float(item['calculations']['pct_changes']['3']) if '3' in item['calculations']['pct_changes'].keys() else None
+                            next_row['pct_change_6'] = float(item['calculations']['pct_changes']['6']) if '6' in item['calculations']['pct_changes'].keys() else None
+                            next_row['pct_change_12'] = float(item['calculations']['pct_changes']['12']) if '12' in item['calculations']['pct_changes'].keys() else None
+                        else:
+                            next_row['pct_change_1'] = next_row['pct_change_3'] = next_row['pct_change_6'] = next_row['pct_change_12'] = None
+                    else:
+                        next_row['net_change_1'] = next_row['net_change_3'] = next_row['net_change_6'] = next_row['net_change_12'] = next_row['pct_change_1'] = next_row['pct_change_3'] = next_row['pct_change_6'] = next_row['pct_change_12'] = None
+                
+                if ("aspects" in config.keys()) and (config['aspects'].lower() == "true"):
+                    next_row['aspects'] = str(item['aspects'])
+                    
+                if ("annualaverage" in config.keys()) and (config['annualaverage'].lower() == "true"):
+                    if period == 'M13':
+                        next_row['annualaverage'] = float(item['value'])
+                    else:
+                        next_row['annualaverage'] = None
         
                 # write one or more rows to the stream:
                 singer.write_records(stream.tap_stream_id,[next_row])
@@ -196,6 +257,7 @@ def sync(config, state, catalog):
                     else:
                         # if data unsorted, save max value until end of writes.  tap-bls goes by the year and will use this approach
                         max_bookmark = max(max_bookmark, int(next_row["record"][bookmark_column[0]]))
+
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})
             if (config['update_state'].lower() == 'true') and (stream_start_year == config['startyear']):  # if you set 'uptadate_state' in config.json the *tap* will update the STATE file - note this is NOT standard behaviour in Singer data flows as the *target* should handle STATE updates.

@@ -48,19 +48,16 @@ def create_schemas():
         if str(series['create_this_schema'].lower()) == "true":
             schema_json = {
                     "type": ["null", "object"],
-                    "additionalProperties":["schema", "record", "type", "stream", series['frequency']],
+                    "additionalProperties":["schema", "record", "type", "stream"],
                     "seriesID" : series['seriesid'],
                     "series_description": series['description'],
                     "key_properties": ["SeriesID","full_period"],
                     "bookmark_properties": ["time_extracted"],
                     "properties":{
                         "SeriesID":{"type":["null","string"]},
-                        "year":{"type":["null","integer"]},
                         "period":{"type":["null","string"]},
                         "value":{"type":["null","number"]},
                         "footnotes":{"type":["null","string"]},
-                        "month":{"type":["null","integer"]},
-                        "quarter":{"type":["integer","integer"]},
                         "full_period":{"type":["null","string"],"format":"date-time"},
                         "time_extracted":{"type":["null","string"],"format":"date-time"}
                         }
