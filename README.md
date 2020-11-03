@@ -14,6 +14,7 @@ This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://
 Copyright &copy; 2020 Stitch
 
 ## Installation quickguide
+requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, getopt, requests, and Singer
 1) Create a virtual environment
 2) Install the tap in your venv using `pip install tap-bls`  # THIS WILL BE TRUE ONCE THIS IS PACKAGED UP! FOR NOW JUST CLONE THE REPO
 3) make a copy of `config.json` and `series.json` into your preferred configuration folder (for example I use `~/tap-bls-config`) 
@@ -97,7 +98,7 @@ Parameter |  description |  values accepted
 ----------|--------------|-----------------
 *calculations*  | provides 1,3,6 and 12 month changes in the data in both net and percentage format |   will accept "true" or "false"
 *annualaverage* | brings in additional data the BLS provides |   will accept "true" or "false"
-*aspects*       | brings in additional data the BLS provides |   will accept "true" or "false"
+*aspects*       | Returns data series aspect data in the format `[{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}]`. Not many BLS series include this. |   will accept "true" or "false"
 
 
 - *disable_collection* should theoretically prevent Singer from collecting additional anonymous data on your runs, which are used to help improve singer.  You can set to "true" if you like, although it appears the additional data is collected either way ¯\\_(ツ)_/¯
