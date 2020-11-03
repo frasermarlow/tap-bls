@@ -140,3 +140,5 @@ MPU4910012 - annual series
 
 LNU02033224 - has 13 months of data each year?  (M13, Q05, and S03 indicate annual averages, but not every data series provides these?)
 
+Investigate why PRS85006092 returns Q5 data which does not match annual averages.
+
