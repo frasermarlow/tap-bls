@@ -93,7 +93,7 @@ This tap requires a config file with a single *required* parameter, namely your 
 - *endyear* is when you want the series to end.  If left blank it will default to the current year.  [ should be a year as a string - i.e. in quote marks ]
 
 The next three parameters are explained in more detail [on the BLS website](https://www.bls.gov/developers/api_signature_v2.htm#parameters)
-**THESE PARAMETERS HAVE NOT BEEN IMPLEMENTED AS OF YET AND WILL BE IGNORED!**
+
 Parameter |  description |  values accepted
 ----------|--------------|-----------------
 *calculations*  | provides 1,3,6 and 12 month changes in the data in both net and percentage format.  If selected, these 6 additional datapoints will be included in separate columns. |   will accept "true" or "false"
@@ -112,32 +112,32 @@ STATE and CATALOG are optional arguments both pointing to their own JSON file.  
 
 ## Schema fields
 
-.|Monthly|Quarterly|Annual|Format|Note
+.|Monthly|Quarterly|Semi-annual|Annual|Format|Note
 -------------|-------------|-------------|-------------|-------------|-------------
 annualaverage|Y*|Y*|N|float, or Null|If set in config
 aspects|Y*|Y*|Y*|Array of json dicts in the format [{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}] - if blank, presented as empty array : `[]`|If set in config.
-net_change_1|Y*|Y*|Y*|float|If set in config
-net_change_3|Y*|Y*|Y*|float|If set in config
-net_change_6|Y*|Y*|Y*|float|If set in config
-net_change_12|Y*|Y*|Y*|float|If set in config
-pct_change_1|Y*|Y*|Y*|float|If set in config
-pct_change_3|Y*|Y*|Y*|float|If set in config
-pct_change_6|Y*|Y*|Y*|float|If set in config
-pct_change_12|Y*|Y*|Y*|float|If set in config
-record__footnotes|Y*|Y*|Y*|text|Potentially returns multiple footnotes, although extremely rare.
-record__full_period|Y|Y|Y|DateTime|Complete date for the datapoint.
-record__month|Y|N|N|integer|Month (1-12)
-record__period|Y|Y|Y|text|Format examples: "M11","Q2","A01"
-record__quarter|N|Y|N|text|
-record__SeriesID|Y|Y|Y|text|The series Id
-record__time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
-record__value|Y|Y|Y|float|
-record__year|Y|Y|Y|integer|
-schema|Y|Y|Y|text|The applied schema to this series (same as series id)
-stream|Y|Y|Y|text|
-time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
-type|Y|Y|Y|text|RECORD
-frequency|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
+net_change_1|Y*|Y*|.|Y*|float|If set in config
+net_change_3|Y*|Y*|.|Y*|float|If set in config
+net_change_6|Y*|Y*|.|Y*|float|If set in config
+net_change_12|Y*|Y*|.|Y*|float|If set in config
+pct_change_1|Y*|Y*|.|Y*|float|If set in config
+pct_change_3|Y*|Y*|.|Y*|float|If set in config
+pct_change_6|Y*|Y*|.|Y*|float|If set in config
+pct_change_12|Y*|Y*|.|Y*|float|If set in config
+record__footnotes|Y*|Y*|.|Y*|text|Potentially returns multiple footnotes, although extremely rare.
+record__full_period|Y|Y|.|Y|DateTime|Complete date for the datapoint.
+record__month|Y|N|.|N|integer|Month (1-12)
+record__period|Y|Y|.|Y|text|Format examples: "M11","Q2","A01"
+record__quarter|N|Y|.|N|text|
+record__SeriesID|Y|Y|.|Y|text|The series Id
+record__time_extracted|Y|Y|.|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
+record__value|Y|Y|.|Y|float|
+record__year|Y|Y|.|Y|integer|
+schema|Y|Y|.|Y|text|The applied schema to this series (same as series id)
+stream|Y|Y|.|Y|text|
+time_extracted|Y|Y|.|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
+type|Y|Y|.|Y|text|RECORD
+frequency|Y|Y|.|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
 
 * (*) Note - the value will be included in the schema, but that does not guarantee that the API call we return a value.  Sometimes the data series siply does not include data for this item.
 
@@ -169,7 +169,6 @@ PRS85006092 - Quarterly series with annual average
 
 MPU4910012 - annual series
 
-LNU02033224 - has 13 months of data each year?  (M13, Q05, and S03 indicate annual averages, but not every data series provides these?)
 
 Investigate why PRS85006092 returns Q5 data which does not match annual averages.
 
