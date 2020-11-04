@@ -130,14 +130,12 @@ record__month|Y|N|N|integer|Month (1-12)
 record__period|Y|Y|Y|text|Format examples: "M11","Q2","A01"
 record__quarter|N|Y|N|text|
 record__SeriesID|Y|Y|Y|text|The series Id
-record__time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a
-second"
+record__time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
 record__value|Y|Y|Y|float|
 record__year|Y|Y|Y|integer|
 schema|Y|Y|Y|text|The applied schema to this series (same as series id)
 stream|Y|Y|Y|text|
-time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a
-second"
+time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
 type|Y|Y|Y|text|RECORD
 frequency|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
 
