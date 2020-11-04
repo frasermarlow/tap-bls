@@ -2,6 +2,9 @@
 
 import singer
 from singer import Transformer, metadata
+import datetime     # time and dates functions
+from .client import *   # set up API call
+import pytz         # timestamp localization / timezones
 
 LOGGER = singer.get_logger()
 
