@@ -120,9 +120,9 @@ pct_change_3|Y*|Y*|.|Y*|float|If set in config
 pct_change_6|Y*|Y*|.|Y*|float|If set in config
 pct_change_12|Y*|Y*|.|Y*|float|If set in config
 record__footnotes|Y*|Y*|.|Y*|text|Potentially returns multiple footnotes, although extremely rare.
-record__full_period|Y|Y|.|Y|DateTime|Complete date for the datapoint.
+record__full_period|Y|Y|.|Y|DateTime|Complete date for the datapoint. Note that annual averages show up with a month value of '13'.
 record__month|Y|N|.|N|integer|Month (1-12)
-record__period|Y|Y|.|Y|text|Format examples: "M11","Q2","A01"
+record__period|Y|Y|.|Y|text|Format examples: "M11","Q2","S02","A01"
 record__quarter|N|Y|.|N|text|
 record__SeriesID|Y|Y|.|Y|text|The series Id
 record__time_extracted|Y|Y|.|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
