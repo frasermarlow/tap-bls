@@ -5,16 +5,11 @@ sudo apt update && sudo apt upgrade && sudo apt dist-upgrade
 
 sudo apt install python-pip
 
-pip install --upgrade pip
+sudo pip install --upgrade pip
 
 sudo apt install git
 
-git clone https://github.com/frasermarlow/tap-bls
-
-#### After you clone the directory, set Git up to remember your credentials (stored in will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
-
 git config credential.helper store && git config --global credential.helper store
-
 
 sudo apt-get install cron
 
@@ -41,6 +36,7 @@ pip install cookiecutter
 pip install singer-python singer-tools target-stitch target-json
 
 # Create then Activate venv with 
+sudo apt-get install python3-venv
 python3 -m venv ~/.virtualenvs/tap-bls
 
 source ~/.virtualenvs/tap-bls/bin/activate
@@ -49,13 +45,17 @@ pyenv local 3.5.3
 
 pip install --upgrade pip wheel
 
+git clone https://github.com/frasermarlow/tap-bls
+
+#### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
+
 cd tap-bls 
 
 pip install -e .
 
 deactivate # exit the virtual environment
 
-> Note that I create the config file in a separate directory, and not in the tap.
+# now we can run the tap - I use 'tap-foo-config' to store a tap's config, catalog and state, so note this is NOT the tap's root directory.
 
 ~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json
 
