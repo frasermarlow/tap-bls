@@ -98,7 +98,7 @@ Parameter |  description |  values accepted
 ----------|--------------|-----------------
 *calculations*  | provides 1,3,6 and 12 month changes in the data in both net and percentage format.  If selected, these 6 additional datapoints will be included in separate columns. |   will accept "true" or "false"
 *annualaverage* | If selected, an annual data series will include a `M13` datapoint with the annual average value. |   will accept "true" or "false"
-*aspects*       | Returns data series aspect data in the format `[{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}]`. Not many BLS series include this. |   will accept "true" or "false"
+*aspects*       | Returns data series aspect data in the format `[{'name': 'Standard Error', 'value': '-', 'footnotes': [{'code': 'A', 'text': 'Dashes indicate data not available.'}]}]`. Not many BLS series include this. |   will accept "true" or "false"
 
 
 - *disable_collection* should theoretically prevent Singer from collecting additional anonymous data on your runs, which are used to help improve singer.  You can set to "true" if you like, although it appears the additional data is collected either way ¯\\_(ツ)_/¯
