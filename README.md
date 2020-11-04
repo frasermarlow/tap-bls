@@ -110,6 +110,37 @@ Parameter |  description |  values accepted
 
 STATE and CATALOG are optional arguments both pointing to their own JSON file.  If you do not specify a `state.json` file the tap will generate one in the same folder at the `config.json` file. tap-bls will use `STATE.json` to remember information from the previous invocation such as the point where it left off, namely the year of the most recent data point.
 
+## Schema fields
+
+|Monthly|Quarterly|Annual|Format|Note
+-------------|-------------|-------------|-------------|-------------|-------------
+annualaverage|Y|N|N|float, or Null|If set in config
+aspects||||Array of json dicts in the format [{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}] - if blank, presented as empty array : `[]`|If set in config.
+net_change_1||||float|If set in config
+net_change_3||||float|If set in config
+net_change_6||||float|If set in config
+net_change_12||||float|If set in config
+pct_change_1||||float|If set in config
+pct_change_3||||float|If set in config
+pct_change_6||||float|If set in config
+pct_change_12||||float|If set in config
+record__footnotes||||text|Potentially returns multiple footnotes, although extremely rare.
+record__full_period|Y|Y|Y|DateTime|Complete date for the datapoint.
+record__month|Y|||integer|Month (1-12)
+record__period||||text|Format examples: "M11","Q2","A01"
+record__quarter||Y||text|
+record__SeriesID|Y|Y|Y|text|The series Id
+record__time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a
+second"
+record__value|Y|Y|Y|float|
+record__year|Y|Y|Y|integer|
+schema|Y|Y|Y|text|The applied schema to this series (same as series id)
+stream|Y|Y|Y|text|
+time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a
+second"
+type|Y|Y|Y|text|RECORD
+frequency|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
+
 ## Autogenerating the SCHEMAs
 Typically, the file `CATALOG.json` (generated during discovery) is used to filter which streams should be synced from all the possible streams available in the /schemas/ folder.  
 
