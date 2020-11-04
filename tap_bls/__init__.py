@@ -241,7 +241,7 @@ def sync(config, state, catalog):
                     next_row['aspects'] = str(item['aspects'])
                     
                 if ("annualaverage" in config.keys()) and (config['annualaverage'].lower() == "true"):
-                    if period == 'M13':
+                    if period == 'M13' or period == 'Q5' :
                         next_row['annualaverage'] = float(item['value'])
                     else:
                         next_row['annualaverage'] = None
