@@ -5,16 +5,11 @@ sudo apt update && sudo apt upgrade && sudo apt dist-upgrade
 
 sudo apt install python-pip
 
-pip install --upgrade pip
+sudo pip install --upgrade pip
 
 sudo apt install git
 
-git clone https://github.com/frasermarlow/tap-bls
-
-#### After you clone the directory, set Git up to remember your credentials (stored in will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
-
 git config credential.helper store && git config --global credential.helper store
-
 
 sudo apt-get install cron
 
@@ -48,6 +43,10 @@ source ~/.virtualenvs/tap-bls/bin/activate
 pyenv local 3.5.3
 
 pip install --upgrade pip wheel
+
+git clone https://github.com/frasermarlow/tap-bls
+
+#### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
 
 cd tap-bls 
 
