@@ -36,6 +36,7 @@ pip install cookiecutter
 pip install singer-python singer-tools target-stitch target-json
 
 # Create then Activate venv with 
+sudo apt-get install python3-venv
 python3 -m venv ~/.virtualenvs/tap-bls
 
 source ~/.virtualenvs/tap-bls/bin/activate
@@ -54,7 +55,7 @@ pip install -e .
 
 deactivate # exit the virtual environment
 
-> Note that I create the config file in a separate directory, and not in the tap.
+# now we can run the tap - I use 'tap-foo-config' to store a tap's config, catalog and state, so note this is NOT the tap's root directory.
 
 ~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json
 
