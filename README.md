@@ -112,23 +112,23 @@ STATE and CATALOG are optional arguments both pointing to their own JSON file.  
 
 ## Schema fields
 
-|Monthly|Quarterly|Annual|Format|Note
+.|Monthly|Quarterly|Annual|Format|Note
 -------------|-------------|-------------|-------------|-------------|-------------
-annualaverage|Y|N|N|float, or Null|If set in config
-aspects||||Array of json dicts in the format [{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}] - if blank, presented as empty array : `[]`|If set in config.
-net_change_1||||float|If set in config
-net_change_3||||float|If set in config
-net_change_6||||float|If set in config
-net_change_12||||float|If set in config
-pct_change_1||||float|If set in config
-pct_change_3||||float|If set in config
-pct_change_6||||float|If set in config
-pct_change_12||||float|If set in config
-record__footnotes||||text|Potentially returns multiple footnotes, although extremely rare.
+annualaverage|Y*|Y*|N|float, or Null|If set in config
+aspects|Y*|Y*|Y*|Array of json dicts in the format [{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}] - if blank, presented as empty array : `[]`|If set in config.
+net_change_1|Y*|Y*|Y*|float|If set in config
+net_change_3|Y*|Y*|Y*|float|If set in config
+net_change_6|Y*|Y*|Y*|float|If set in config
+net_change_12|Y*|Y*|Y*|float|If set in config
+pct_change_1|Y*|Y*|Y*|float|If set in config
+pct_change_3|Y*|Y*|Y*|float|If set in config
+pct_change_6|Y*|Y*|Y*|float|If set in config
+pct_change_12|Y*|Y*|Y*|float|If set in config
+record__footnotes|Y*|Y*|Y*|text|Potentially returns multiple footnotes, although extremely rare.
 record__full_period|Y|Y|Y|DateTime|Complete date for the datapoint.
-record__month|Y|||integer|Month (1-12)
-record__period||||text|Format examples: "M11","Q2","A01"
-record__quarter||Y||text|
+record__month|Y|N|N|integer|Month (1-12)
+record__period|Y|Y|Y|text|Format examples: "M11","Q2","A01"
+record__quarter|N|Y|N|text|
 record__SeriesID|Y|Y|Y|text|The series Id
 record__time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a
 second"
@@ -140,6 +140,8 @@ time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a 
 second"
 type|Y|Y|Y|text|RECORD
 frequency|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
+
+* Note - the value will be included in the schema, but that does not guarantee that the API call we return a value.  Sometimes the data series siply does not include data for this item.
 
 ## Autogenerating the SCHEMAs
 Typically, the file `CATALOG.json` (generated during discovery) is used to filter which streams should be synced from all the possible streams available in the /schemas/ folder.  
