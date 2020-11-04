@@ -25,8 +25,7 @@ def whatisthis(item):
             item_name = "THIS ITEM"
         print('\n',item,'\n'+ item_name +' IS TYPE: ',type(item),'\n')
 
-REQUIRED_CONFIG_KEYS = ["api-key"]
-
+REQUIRED_CONFIG_KEYS = []  # technically you do not require an API key for this to work, but you will hit limits
 
 LOGGER = singer.get_logger()
 
@@ -117,7 +116,12 @@ def sync(config, state, catalog):
                         LOGGER.info(year_reset)
         
         # make the call
-        json_data = call_api({"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":stream_end_year,"calculations":stream_calculations,"annualaverage":stream_annualaverage,"aspects":stream_aspects,"registrationkey":config['api-key']})
+        the_call = {"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":stream_end_year,"calculations":stream_calculations,"annualaverage":stream_annualaverage,"aspects":stream_aspects}
+        
+        if 'api-key' in config.keys():
+            the_call["registrationkey"] = config['api-key']
+            
+        json_data = call_api(the_call)
         
         raw_schema = stream.schema.to_dict()
         
@@ -289,8 +293,14 @@ def main():
             catalog = args.catalog
         else:
             catalog = discover(load_schemas())
-            
+            LOGGER.info("You did not specify a catalog.json file, so I will create one.")
+        
+        if len(catalog.streams) == 0:
+            LOGGER.info("The catalog.json file exists, but is empty.")
+            return
+        
         sync(args.config, args.state, catalog)  # run the synch
+    return
 
 
 # if this file is being called as the main program, execute the function main().
