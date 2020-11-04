@@ -139,7 +139,7 @@ time_extracted|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a 
 type|Y|Y|Y|text|RECORD
 frequency|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
 
-* Note - the value will be included in the schema, but that does not guarantee that the API call we return a value.  Sometimes the data series siply does not include data for this item.
+* (*) Note - the value will be included in the schema, but that does not guarantee that the API call we return a value.  Sometimes the data series siply does not include data for this item.
 
 ## Autogenerating the SCHEMAs
 Typically, the file `CATALOG.json` (generated during discovery) is used to filter which streams should be synced from all the possible streams available in the /schemas/ folder.  
