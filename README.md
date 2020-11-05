@@ -109,16 +109,16 @@ STATE and CATALOG are optional arguments both pointing to their own JSON file.  
 
 .|Monthly|Quarterly|Semi-Annual|Annual|Format|Note
 -------------|-------------|-------------|-------------|-------------|-------------|-------------
-annualaverage|Y*|Y*|Y*|N|float, or Null|If set in config
-aspects|Y*|Y*|Y*|Y*|Array of json dicts in the format [{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}] - if blank, presented as empty array : `[]`|If set in config.
-net_change_1|Y*|Y*|Y*|Y*|float|If set in config
-net_change_3|Y*|Y*|Y*|Y*|float|If set in config
-net_change_6|Y*|Y*|Y*|Y*|float|If set in config
-net_change_12|Y*|Y*|Y*|Y*|float|If set in config
-pct_change_1|Y*|Y*|Y*|Y*|float|If set in config
-pct_change_3|Y*|Y*|Y*|Y*|float|If set in config
-pct_change_6|Y*|Y*|Y*|Y*|float|If set in config
-pct_change_12|Y*|Y*|Y*|Y*|float|If set in config
+annualaverage|Y*|Y*|Y*|N|float, or Null|If set in config as `"annualaverage": "true"`
+aspects|Y*|Y*|Y*|Y*|Array of json dicts in the format [{'name': 'Standard Error', 'value': '0.1', 'footnotes': [{}]}] - if blank, presented as empty array : `[]`|If set in config as `"aspects": "true"`
+net_change_1|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+net_change_3|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+net_change_6|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+net_change_12|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+pct_change_1|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+pct_change_3|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+pct_change_6|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
+pct_change_12|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
 record__footnotes|Y*|Y*|Y*|Y*|text|Potentially returns multiple footnotes, although extremely rare.
 record__full_period|Y|Y|Y|Y|DateTime|Complete date for the datapoint.
 record__month|Y|N|N|N|integer|Month (1-12)
