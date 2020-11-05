@@ -20,9 +20,9 @@ requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, get
 3) make a copy of `sample_config.json` (as `config.json`) and `series.json` (as `series.json`) into your preferred configuration folder (for example I use `~/tap-bls-config`) 
 4) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
 5) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
-6) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` but if you have `tap-csv` file installed you can make pretty outputs using ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
+6) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` but if you have `tap-csv` installed you can make pretty outputs using ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
 
-You can use a `--state` file if you like.
+You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.
 
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
