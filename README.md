@@ -13,28 +13,31 @@ This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://
 
 Copyright &copy; 2020 Stitch
 
-## Installation quickguide
-requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, getopt, requests, and Singer
-1) Create a virtual environment
-2) ~~Install the tap in your venv using `pip install tap-bls`~~  # THIS WILL BE TRUE ONCE THIS IS PACKAGED UP! FOR NOW JUST CLONE THE REPO
-3) make a copy of `sample_config.json` (as `config.json`) and `series.json` (as `series.json`) into your preferred configuration folder (for example I use `~/tap-bls-config`) 
-4) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
-5) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
-6) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` but if you have `tap-csv` installed you can make pretty outputs using ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
-
-You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.
-
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
 The BLS provides [an API for pulling data from their records](https://www.bls.gov/data/#api), and [Singer.io](https://www.singer.io/) is a common framework for building data flows.
 
-## Why is this cool?
+## Installation quickguide
+requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, getopt, requests, and Singer
+1) Create a virtual environment
+2) ~~Install the tap in your venv using `pip install tap-bls`~~  # THIS WILL BE TRUE ONCE THIS IS PACKAGED UP! FOR NOW JUST CLONE THE REPO
+3) make a copy of `sample_config.json` (as `config.json`) and `series.json` (as `series.json`) from the root of the repo into your preferred configuration folder (for example I use `~/tap-bls-config`) 
+4) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
+5) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
+6) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as 
+```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
+but if you have `tap-csv` installed you can make pretty outputs using 
+```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
+
+You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.
+
+## So why is this tap cool?
 
 The BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm) and the most popular data series (a.k.a. "The BLS Greatest Hits!") can be found [here](https://data.bls.gov/cgi-bin/surveymost?bls).
 
-So say you wanted to know the trend for unemployment during the COVID-19 pandemic of 2020 you could simply [query the API](https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2019&endyear=2020) and see that it rapidly rose from from 3.5% at the end of 2019 to a high of 14.7% in April 2020.
+So say you wanted to know the trend for unemployment during the COVID-19 pandemic of 2020 you could simply [query the API](https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2019&endyear=2020) and see that it rapidly rose from from 3.5% at the end of 2019 to a high of *14.7%* in April 2020.
 
-## What does the tap provide
+## What does the tap provide?
 
 The volume of data available can quickly get overwhelming.  Just one topic - [Producer Price Indexes - has 318 distinct data series](https://www.bls.gov/ppi/expaggseriesids.htm). Others are so complex, they provide entire excel sheets full of time series references, as is the case for the [American Time Use study](https://www.bls.gov/tus/seriesid.htm). An explanation of [how the BLS structures Series IDs for each topic can be found here](https://www.bls.gov/help/hlpforma.htm).  
 
