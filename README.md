@@ -171,6 +171,8 @@ PRS85006092 - Quarterly series with annual average
 
 MPU4910012 - annual series
 
+CUURS12BSA0 - bi-monthly series - essentially monthly, but with blank values every other month.
+
 
 Investigate why PRS85006092 returns Q5 data which does not match annual averages.
 
