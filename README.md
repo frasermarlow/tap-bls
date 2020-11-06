@@ -144,7 +144,7 @@ frequency|Y|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual s
 Typically, the file `CATALOG.json` (generated during discovery) is used to filter which streams should be synced from all the possible streams available in the /schemas/ folder.  
 
 tap-bls behaves a bit differently because of the enormous number of potential data series you migth pull from the BLS.  Therefore it works as follows:
-1) If no `.json` schema files are to be found in the `tap_bls/schemas/` folder, the tap will generate them for you based on the `series.json` file.  The tap will look for the `series.json` file in the same folder as your `config.json` file.  This allows you to rapidly select which BLS data series you want to work with.
+1) If no `.json` schema files are to be found in the `tap_bls/schemas/` folder, the tap will generate them for you based on the `series.json` file.  The tap will look for the `series.json` file in the same folder as your `config.json` file.  This allows you to rapidly select which BLS data series you want to work with.  A sample 'series.json' file is found in the root of this repo with a bunch of the most popular data seris included, so you can just copy that to your main config folder.
 2) Once you have a set of schema files created (manually or using the automated approach above) you can generate the Singer `catalog.json` file using the tap's --discover mode using a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json``` (your set up may use a different folder than 'tap-bls-config' - that is up to you.)
 
 
