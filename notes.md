@@ -66,10 +66,15 @@ deactivate # exit the virtual environment
 
 # install tap-csv
 python3 -m venv ~/.virtualenvs/target-csv      # create a virtual environment specific to this tap
+
 source ~/.virtualenvs/target-csv/bin/activate  # activate the virtual environment
+
 pyenv local 3.5.3
+
 pip install --upgrade pip wheel
+
 pip install target-csv
+
 deactivate
 
 # run the tap
