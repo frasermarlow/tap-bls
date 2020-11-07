@@ -125,7 +125,7 @@ pct_change_12|Y*|Y*|Y*|Y*|float|If set in config as `"calculations": "true"`
 record__footnotes|Y*|Y*|Y*|Y*|text|Potentially returns multiple footnotes, although extremely rare.
 record__full_period|Y|Y|Y|Y|DateTime|Complete date for the datapoint.
 record__month|Y|N|N|N|integer|Month (1-12)
-record__period|Y|Y|Y|Y|text|Format examples: "M11","Q2","A01"
+record__period|Y|Y|Y|Y|text|Format examples: "M11","Q2","S02","A01"
 record__quarter|N|Y|N|N|text|
 record__SeriesID|Y|Y|Y|Y|text|The series Id
 record__time_extracted|Y|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
@@ -135,7 +135,7 @@ schema|Y|Y|Y|Y|text|The applied schema to this series (same as series id)
 stream|Y|Y|Y|Y|text|
 time_extracted|Y|Y|Y|Y|DateTime|"Complete date plus hours, minutes, seconds and a decimal fraction of a second"
 type|Y|Y|Y|Y|text|RECORD
-frequency|Y|Y|Y|Y|text|Set to 'M','Q', or 'A' for monthly, quarterly or annual series.
+frequency|Y|Y|Y|Y|text|Set to 'M','Q','S' or 'A' for monthly, quarterly or annual series.
 
 
 * (*) Note - the value will be included in the schema, but that does not guarantee that the API call we return a value.  Sometimes the data series siply does not include data for this item.
@@ -147,6 +147,19 @@ tap-bls behaves a bit differently because of the enormous number of potential da
 1) If no `.json` schema files are to be found in the `tap_bls/schemas/` folder, the tap will generate them for you based on the `series.json` file.  The tap will look for the `series.json` file in the same folder as your `config.json` file.  This allows you to rapidly select which BLS data series you want to work with.  A sample 'series.json' file is found in the root of this repo with a bunch of the most popular data seris included, so you can just copy that to your main config folder.
 2) Once you have a set of schema files created (manually or using the automated approach above) you can generate the Singer `catalog.json` file using the tap's --discover mode using a command such as ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json``` (your set up may use a different folder than 'tap-bls-config' - that is up to you.)
 
+## A note on series frequency
+
+As far as I can figure out, the BLS provides data series in the following frequencies:
+
+* Monthly - the most common
+* Bi-monthly - very uncommon ( See CUURS12BSA0 ) 
+* Quarterly - fairly common
+* Semi-Annually (6 months) - uncommon, see [CUURS12BSAF](https://data.bls.gov/timeseries/CUURS12BSAF)
+* Annual - fairly common
+
+Bi-monthly and semi-annual appears to be most prevalent in data series related to consumer price index reports.
+
+Note that where available (and where set to 'true' in `config.json`), annual averages are should as `M13` in the dataset.
 
 
 
