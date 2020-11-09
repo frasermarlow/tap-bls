@@ -165,7 +165,7 @@ Note that where available (and where set to 'true' in `config.json`), annual ave
 
 There is no predefined file structure for building a Singer tap, but here is a logical structure for this particular set-up.
 
-![tap-bls file structure](https://drive.google.com/file/d/1m4Ymjn68sIJgkcOq9w3NSEImg4XZ7t8G/view?usp=sharing)
+![tap-bls file structure](https://drive.google.com/file/d/1m4Ymjn68sIJgkcOq9w3NSEImg4XZ7t8G/preview)
 
 
 ## pagination
