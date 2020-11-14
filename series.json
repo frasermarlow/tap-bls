@@ -1,5 +1,7 @@
 {
 "series":[
+{"seriesid":"CUURS12BSAF","description":"Food and beverages in Philadelphia-Camden-Wilmington, PA-NJ-DE-MD, all urban consumers, not seasonally adjusted", "create_this_schema":"True"},
+{"seriesid":"CUURS12BSA0","description":"All items in Philadelphia-Camden-Wilmington, PA-NJ-DE-MD, all urban consumers, not seasonally adjusted", "create_this_schema":"True"},
 {"seriesid":"EIUIR","description":"Imports - All Commodities", "create_this_schema":"False"},
 {"seriesid":"EIUIQ","description":"Exports - All Commodities","create_this_schema":"False"},
 {"seriesid":"CES0500000002","description":"Total Private Average Weekly Hours of All Employees - Seasonally Adjusted","create_this_schema":"False"},
@@ -7,7 +9,7 @@
 {"seriesid":"CES0500000003","description":"Total Private Average Hourly Earnings of All Employees - Seasonally Adjusted","create_this_schema":"False"},
 {"seriesid":"CES0500000008","description":"Total Private Average Hourly Earnings of Prod. and Nonsup. Employees - Seasonally Adjusted", "create_this_schema":"False"},{"seriesid":"LNS11000000","description":"Civilian Labor Force (Seasonally Adjusted)", "create_this_schema":"False"},
 {"seriesid":"LNS12000000","description":"Civilian Employment (Seasonally Adjusted)", "create_this_schema":"False"},{"seriesid":"LNS13000000","description":"Civilian Unemployment (Seasonally Adjusted)", "create_this_schema":"False"},
-{"seriesid":"LNS14000000","description":"Unemployment Rate (Seasonally Adjusted)", "create_this_schema":"True"},
+{"seriesid":"LNS14000000","description":"Unemployment Rate (Seasonally Adjusted)", "create_this_schema":"False"},
 {"seriesid":"PRS85006112","description":"Nonfarm Business Unit Labor Costs", "create_this_schema":"False"},
 {"seriesid":"PRS85006152","description":"Nonfarm Business Real Hourly Compensation", "create_this_schema":"False"},
 {"seriesid":"CUUR0000SA0","description":"CPI for All Urban Consumers (CPI-U) 1982-84=100 (Unadjusted)", "create_this_schema":"False"},
@@ -67,4 +69,3 @@
 {"seriesid":"MPU4910012","description":"Private Nonfarm Business - Multifactor Productivity annual index", "create_this_schema":"False"},
 {"seriesid":"PRS85006092","description":"Output Per Hour - Non-farm Business Productivity", "create_this_schema":"False"}
 ]}
-

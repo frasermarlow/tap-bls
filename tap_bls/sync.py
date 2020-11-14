@@ -5,9 +5,9 @@ from singer import Transformer, metadata
 import datetime     # time and dates functions
 from .client import *   # set up API call
 import pytz         # timestamp localization / timezones
+from .update_state import update_state
 
 LOGGER = singer.get_logger()
-
 
 def do_sync(config, state, catalog):
     """ Sync data from tap source """        
@@ -43,7 +43,7 @@ def do_sync(config, state, catalog):
             stream_annualaverage = config['annualaverage']
         else:
             stream_annualaverage = "False"
-            
+
         if "aspects" in config.keys():
             stream_aspects = config['aspects']
         else:
@@ -64,7 +64,7 @@ def do_sync(config, state, catalog):
                         stream_start_year = str(pickup_year)
                         year_reset = "As per state, overriding start year for stream " + str(stream.stream) + " to " + stream_start_year
                         LOGGER.info(year_reset)
-        
+
         # make the call
         the_call = {"seriesid": [stream.tap_stream_id],"startyear":stream_start_year, "endyear":stream_end_year,"calculations":stream_calculations,"annualaverage":stream_annualaverage,"aspects":stream_aspects}
         
@@ -77,14 +77,16 @@ def do_sync(config, state, catalog):
         
         series_frequency = json_data['Results']['series'][0]['data'][0]['period'][0] # assigns 'A' for annual, 'Q' for quarterly and 'M' for monthly.
         
-        if series_frequency == "A":
+        if series_frequency == "A":  # series is annual
             raw_schema['properties']['year'] = {"type":["null","integer"]}
-        if series_frequency == "Q":
+        if series_frequency == "S":  # series is semi-annual
+            raw_schema['properties']['period'] = {"type":["null","integer"]}
+        if series_frequency == "Q":  # series is quarterly
             raw_schema['properties']['quarter'] = {"type":["null","integer"]}
             raw_schema['properties']['year'] = {"type":["null","integer"]}
-        if series_frequency == "M":
+        if series_frequency == "M":  # series is monthly
             raw_schema['properties']['month'] = {"type":["null","integer"]}
-        
+
         if ("calculations" in config.keys()) and (config['calculations'].lower() == "true"):
             raw_schema['properties']['net_change_1'] = {"type":["null","number"]}
             raw_schema['properties']['net_change_3'] = {"type":["null","number"]}
@@ -128,6 +130,10 @@ def do_sync(config, state, catalog):
                 elif period[0] == 'Q':
                     month = 0
                     quarter = period[2]
+                elif period[0] == 'S':
+                    month = 0
+                    quarter = 0
+                    period = period[2]
                 elif period[0] == 'A':
                     month = 0
                     quarter = 0

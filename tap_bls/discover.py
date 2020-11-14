@@ -3,9 +3,40 @@
 import os
 import json
 
+from .create_schemas import create_schemas
+
 from singer import metadata
 from singer.catalog import Catalog, CatalogEntry
 from .streams import STREAM_OBJECTS  # stream-specific objects for handling the data model in each stream
+from singer.schema import Schema
+
+# function for finding a file on the system running the tap, relative to the file running the tap.
+def get_abs_path(path):
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
+
+
+# go into the local 'schemas' folder, and pare through all the .json files you find there.
+def load_schemas():
+    ### Load schemas from schemas folder ###
+    schemas = {}
+    schemas_path = get_abs_path('schemas')
+    
+    # If the '/schemas/ folder is missing, create it.
+    if not os.path.isdir(schemas_path):
+        os.mkdir(schemas_path)
+
+    # If no schemas are found in the /schemas/ folder, then generate them using create_schemas.py
+    if len([name for name in os.listdir(schemas_path) if os.path.isfile(os.path.join(schemas_path, name))]) == 0:
+        create_schemas()
+    
+    # now grab the .json files in /schemas/ and output the catalog.json file.
+
+    for filename in os.listdir(schemas_path):
+        path = schemas_path + '/' + filename
+        file_raw = filename.replace('.json', '')
+        with open(path) as file:
+            schemas[file_raw] = Schema.from_dict(json.load(file))
+    return schemas   # returns a 'dict' that contains <class 'singer.schema.Schema'> objects
 
 def discover(raw_schemas):
     streams = []
