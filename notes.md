@@ -28,7 +28,8 @@ python3 -m venv ~/.virtualenvs/tap-bls
 source ~/.virtualenvs/tap-bls/bin/activate  
 pyenv local 3.5.3  
 pip install --upgrade pip wheel  
-git clone https://github.com/frasermarlow/tap-bls  
+pip install tap-bls
+# git clone https://github.com/frasermarlow/tap-bls  
 
 #### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
 
