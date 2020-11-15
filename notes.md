@@ -1,34 +1,34 @@
 # Installed on Ubuntu 18.04 LTS Windows subsystem
 # System updated with the following:
 
-sudo apt update && sudo apt upgrade && sudo apt dist-upgrade  
-sudo apt install python3-pip  
-sudo pip install --upgrade pip  
-sudo apt install git  
-git config credential.helper store && git config --global credential.helper store  
-sudo apt-get install cron  
-sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl  
-sudo apt-get install -y python3-dev libssl-dev  
-sudo apt install -y pylint  
-sudo apt-get install -y python3-venv  
-curl https://pyenv.run | bash  
-echo '' >> ~/.bashrc  
-echo 'export PATH="/home/ubuntu/.pyenv/bin:$PATH"' >> ~/.bashrc  
-echo 'eval "$(pyenv init -)"' >> ~/.bashrc  
-echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc  
-exec "$SHELL"  
+- [ ] sudo apt update && sudo apt upgrade && sudo apt dist-upgrade  
+- [ ] sudo apt install python3-pip  
+- [ ] sudo pip install --upgrade pip  
+- [ ] sudo apt install git  
+- [ ] git config credential.helper store && git config --global credential.helper store  
+- [ ] sudo apt-get install cron  
+- [ ] sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl  
+- [ ] sudo apt-get install -y python3-dev libssl-dev  
+- [ ] sudo apt install -y pylint  
+- [ ] sudo apt-get install -y python3-venv  
+- [ ] curl https://pyenv.run | bash  
+- [ ] echo '' >> ~/.bashrc  
+- [ ] echo 'export PATH="/home/ubuntu/.pyenv/bin:$PATH"' >> ~/.bashrc  
+- [ ] echo 'eval "$(pyenv init -)"' >> ~/.bashrc  
+- [ ] echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc  
+- [ ] exec "$SHELL"  
 
-pyenv install 3.5.3  
-pip install cookiecutter  
-pip install singer-python singer-tools target-stitch target-json  
+- [ ] pyenv install 3.5.3  
+- [ ] pip install cookiecutter  
+- [ ] pip install singer-python singer-tools target-stitch target-json  
 
-# Create then Activate venv with 
-sudo apt-get install python3-venv  
-python3 -m venv ~/.virtualenvs/tap-bls  
-source ~/.virtualenvs/tap-bls/bin/activate  
-pyenv local 3.5.3  
-pip install --upgrade pip wheel  
-pip install tap-bls
+# Install, Create then Activate venv with 
+- [ ] sudo apt-get install python3-venv  
+- [ ] python3 -m venv ~/.virtualenvs/tap-bls  
+- [ ] source ~/.virtualenvs/tap-bls/bin/activate  
+- [ ] pyenv local 3.5.3  
+- [ ] pip install --upgrade pip wheel  
+- [ ] pip install tap-bls
 # git clone https://github.com/frasermarlow/tap-bls  
 
 #### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
