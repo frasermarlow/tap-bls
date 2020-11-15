@@ -13,18 +13,23 @@ This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://
 
 Copyright &copy; 2020 Stitch
 
+## PyPi package repo:
+https://pypi.org/project/tap-bls/
+
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
 The BLS provides [an API for pulling data from their records](https://www.bls.gov/data/#api), and [Singer.io](https://www.singer.io/) is a common framework for building data flows.
 
 ## Installation quickguide
 requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, getopt, requests, and Singer
-1) Create a virtual environment
-2) ~~Install the tap in your venv using `pip install tap-bls`~~  # THIS WILL BE TRUE ONCE THIS IS PACKAGED UP! FOR NOW JUST CLONE THE REPO
-3) make a copy of `sample_config.json` (as `config.json`) and `series.json` (as `series.json`) from the root of the repo into your preferred configuration folder (for example I use `~/tap-bls-config`) 
-4) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
-5) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
-6) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as 
+1) Create a virtual environment, such as `python3 -m venv ~/.virtualenvs/tap-bls` and activate it with `source ~/.virtualenvs/tap-bls/bin/activate`
+2) Set the local version of Python to 3.5.3:  `pyenv local 3.5.3`
+3) Install `wheel` with `pip install --upgrade pip wheel`
+4) Install the tap in your venv using `pip install tap-bls
+5) make a copy of `sample_config.json` (as `config.json`) and `series.json` (as `series.json`) from the root of the repo into your preferred configuration folder (for example I use `~/tap-bls-config`) 
+6) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
+7) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
+8) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as 
 ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
 but if you have `tap-csv` installed you can make pretty outputs using 
 ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
