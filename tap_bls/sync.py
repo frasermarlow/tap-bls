@@ -73,6 +73,9 @@ def do_sync(config, state, catalog):
             
         json_data = call_api(the_call)
         
+        if not json_data:
+            return
+        
         raw_schema = stream.schema.to_dict()
         
         series_frequency = json_data['Results']['series'][0]['data'][0]['period'][0] # assigns 'A' for annual, 'Q' for quarterly and 'M' for monthly.

@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="tap-bls",
-    version="0.1.0",
+    version="0.1.1",
     description="Singer.io tap for extracting data from the Bureau of Labor Statistics API 2.0",
     author="Stitch + Fraser Marlow",
     authr_email="tap.bls@frasermarlow.com",
@@ -30,5 +30,5 @@ setup(
         "schemas": ["tap_bls/schemas/*.json"]
     },
     include_package_data=True,
-    python_requires='>=3.6'
+    python_requires='>=3.5'
 )
