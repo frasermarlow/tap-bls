@@ -3,13 +3,11 @@
 
 sudo apt update && sudo apt upgrade && sudo apt dist-upgrade  
 sudo apt install python3-pip  
-~~sudo pip install -y --upgrade pip  ~~
 sudo apt install git  
-~~git config credential.helper store && git config --global credential.helper store  ~~
+# git config credential.helper store && git config --global credential.helper store  
 sudo apt-get install cron  
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl  
 sudo apt-get install -y python3-dev libssl-dev pylint 
-~~sudo apt install -y pylint  ~~
 sudo apt-get install -y python3-venv  
 curl https://pyenv.run | bash  
 echo '' >> ~/.bashrc  
@@ -19,8 +17,9 @@ echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
 exec "$SHELL"  
 
 pyenv install 3.5.3  
-pip install cookiecutter  
-pip install singer-python singer-tools target-stitch target-json  
+python3 --version # you may need to change the next lines based on your version - here I assume 3.6
+python3.6 -m pip install cookiecutter  
+python3.6 -m pip install singer-python singer-tools target-stitch target-json  
 
 # Install, Create then Activate venv with 
 sudo apt-get install python3-venv  
@@ -28,23 +27,19 @@ python3 -m venv ~/.virtualenvs/tap-bls
 source ~/.virtualenvs/tap-bls/bin/activate  
 pyenv local 3.5.3  
 pip install --upgrade pip wheel  
-pip install tap-bls
-# git clone https://github.com/frasermarlow/tap-bls  
-
-#### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
-
-cd tap-bls 
-pip install -e .  
+pip install tap-bls  
 deactivate # exit the virtual environment  
+
+# create the config directory: 
+mkdir tap-bls-config && cd tap-bls-config
 
 # Copy over series.json and sample-catalog.json
 curl -H 'Accept: application/vnd.github.v3.raw' -O -L https://raw.githubusercontent.com/frasermarlow/tap-bls/master/series.json
 curl -H 'Accept: application/vnd.github.v3.raw' -O -L https://raw.githubusercontent.com/frasermarlow/tap-bls/master/sample_config.json
+mv sample_config.json config.json
 
-# now we can run the tap - I use 'tap-foo-config' to store a tap's config, catalog and state, so note this is NOT the tap's root directory.  
-~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json  
-~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --properties catalog.json  
-~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover  
+# now we can build the catalog - I use 'tap-foo-config' to store a tap's config, catalog and state, so note this is NOT the tap's root directory.  
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json    
 
 # install tap-csv
 python3 -m venv ~/.virtualenvs/target-csv      # create a virtual environment specific to this tap  
@@ -56,4 +51,6 @@ deactivate
 
 # run the tap
 
-~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json | ~/.virtualenvs/target-csv/bin/target-csv  
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv  
+
+#### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
