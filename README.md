@@ -61,8 +61,7 @@ The API has some 'fair use' limitations outlined [here](https://www.bls.gov/deve
 
 The BLS Public API utilizes two HTTP request-response mechanisms to retrieve data: GET and POST. GET requests data from a specified source. POST submits data to a specified resource to be processed. The BLS Public Data API uses GET to request a single piece of information and POST for all other requests.
 
-The BLS data goes back to the year 2000, so any start date prior to 2000 will default to that date.
-Also the BLS have imposed a maximum of 20 years in the query (with the API key - and 10 years without).  Since most data series go back to 2000, the year 2020 seemed like an optimum time to develop a tap with a 20 year historical limit!  Bear this in mind as longer time queries will simply be cut off.
+The BLS have imposed a maximum of 20 years in the query (with the API key - and 10 years without).  Bear this in mind as longer time queries will simply be cut off.
 
 Python is the language of choice for Singer.io taps, we are going to stick with that and [sample code is provided here](https://www.bls.gov/developers/api_python.htm#python2).  The BLS provide alternatives in most popular languages.
 
