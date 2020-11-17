@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name="tap-bls",
     version="0.1.3",
     description="Singer.io tap for extracting data from the Bureau of Labor Statistics API 2.0",
-    long_description="See full description [on Github](https://github.com/frasermarlow/tap-bls/blob/master/README.md)",
+    long_description=long_description,
     long_description_content_type="text/markdown",
     author="Stitch + Fraser Marlow",
     authr_email="tap.bls@frasermarlow.com",
@@ -15,7 +18,6 @@ setup(
         "Operating System :: OS Independent"],
     py_modules=["tap_bls"],
     install_requires=[
-        # NB: Pin these to a more specific version for tap reliability
         "singer-python==5.9.0","singer-tools==0.4.1",
         "requests==2.20.0","backoff==1.8.0",
         "jsonschema==2.6.0","pylint==1.8.3",
