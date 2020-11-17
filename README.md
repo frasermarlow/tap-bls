@@ -35,7 +35,7 @@ requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, get
 but if you have `tap-csv` installed you can make pretty outputs using 
 ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
 
-You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.
+You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.  If you want info on Singer `state` files [check out the docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md).
 
 ## So why is this tap cool?
 
