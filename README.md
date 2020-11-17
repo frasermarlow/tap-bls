@@ -184,18 +184,11 @@ https://github.com/OliverSherouse/bls
 
 # Open questions and to-dos
 
-TEST SERIES:
-
-CES0000000001 - Monthly series without annual average
-
-WPUFD49104 - Monthly series with annual average
-
-PRS85006092 - Quarterly series with annual average
-
-MPU4910012 - annual series
-
-CUURS12BSA0 - bi-monthly series - essentially monthly, but with blank values every other month.
-
-
-Investigate why PRS85006092 returns Q5 data which does not match annual averages.
-
+TEST SERIES:  
+CES0000000001 - Monthly series without annual average  
+WPUFD49104 - Monthly series with annual average  
+PRS85006092 - Quarterly series with annual average  
+MPU4910012 - annual series  
+CUURS12BSA0 - bi-monthly series - essentially monthly, but with blank values every other month.  
+https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=1940&endyear=1960  Series starts mid-window  
+Investigate why PRS85006092 returns Q5 data which does not match annual averages.  
