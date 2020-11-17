@@ -15,18 +15,18 @@ Copyright &copy; 2020 Stitch
 
 ## PyPi package repo:
 https://pypi.org/project/tap-bls/  
-`pip install tap-bls`
+`pip install tap-bls`  
 
-## Extract BLS (Bureau of Labor Statistics) data using Singer.io
+## Extract BLS (Bureau of Labor Statistics) data using Singer.io  
 
-The BLS provides [an API for pulling data from their records](https://www.bls.gov/data/#api), and [Singer.io](https://www.singer.io/) is a common framework for building data flows.
+The BLS provides [an API for pulling data from their records](https://www.bls.gov/data/#api), and [Singer.io](https://www.singer.io/) is a common framework for building data flows.  
 
-## Installation quickguide
-requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, getopt, requests, and Singer
-1) Create a virtual environment, such as `python3 -m venv ~/.virtualenvs/tap-bls` and activate it with `source ~/.virtualenvs/tap-bls/bin/activate`
-2) Set the local version of Python to 3.5.3:  `pyenv local 3.5.3`
-3) Install `wheel` with `pip install --upgrade pip wheel`
-4) Install the tap in your venv using `pip install tap-bls
+## Installation quickguide  
+requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, getopt, requests, and Singer  
+1) Create a virtual environment, such as `python3 -m venv ~/.virtualenvs/tap-bls` and activate it with `source ~/.virtualenvs/tap-bls/bin/activate`  
+2) Set the local version of Python to 3.5.3:  `pyenv local 3.5.3`  
+3) Install `wheel` with `pip install --upgrade pip wheel`  
+4) Install the tap in your venv using `pip install tap-bls`  
 5) make a copy of `sample_config.json` (as `config.json`) and `series.json` (as `series.json`) from the root of the repo into your preferred configuration folder (for example I use `~/tap-bls-config`) 
 6) edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key.  You can even leave this blank if you just want to get started.
 7) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
