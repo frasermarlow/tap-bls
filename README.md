@@ -14,7 +14,8 @@ This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://
 Copyright &copy; 2020 Stitch
 
 ## PyPi package repo:
-https://pypi.org/project/tap-bls/
+https://pypi.org/project/tap-bls/  
+`pip install tap-bls`
 
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
