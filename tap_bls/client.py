@@ -16,12 +16,22 @@ def call_api(api_parameters):
     data = json.dumps(api_parameters)
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
     payload = json.loads(p.text)
+    
+    
+    notes=""
+    a=0
+    for note in payload['message']:
+        if note:
+            notes = notes + note
+            if a > 0:
+                notes = notes + " | "
+            a += 1
 
     if payload['status'] == "REQUEST_NOT_PROCESSED":
-        LOGGER.info("The API call for series " + str(api_parameters['seriesid']) + " failed. Check your API key in the config file.")
+        LOGGER.info("The API call for series " + str(api_parameters['seriesid'][0]) + " failed. Check your API key in the config file. The API returned this error: \"" + notes + "\"")
         return False
     elif payload['status'] == "REQUEST_SUCCEEDED":
-        message = "API call for series " + str(api_parameters['seriesid']) + " succeeded in " + str(payload['responseTime']) + "ms"
+        message = "API call for series " + str(api_parameters['seriesid'][0]) + " succeeded in " + str(payload['responseTime']) + "ms"
         LOGGER.info(message)
         seriesid = payload['Results']['series'][0]['seriesID']    
         log_the_api_call_to_file("API PARAMETERS: " + str(api_parameters),seriesid)

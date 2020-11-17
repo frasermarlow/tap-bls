@@ -3,8 +3,10 @@ from setuptools import setup
 
 setup(
     name="tap-bls",
-    version="0.1.1",
+    version="0.1.3",
     description="Singer.io tap for extracting data from the Bureau of Labor Statistics API 2.0",
+    long_description="See full descrition [on Github](https://github.com/frasermarlow/tap-bls/blob/master/README.md)",
+    long_description_content_type="text/markdown",
     author="Stitch + Fraser Marlow",
     authr_email="tap.bls@frasermarlow.com",
     url="https://github.com/frasermarlow/tap-bls",
