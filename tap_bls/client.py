@@ -27,17 +27,34 @@ def call_api(api_parameters):
                 notes = notes + " | "
             a += 1
 
-    if payload['status'] == "REQUEST_NOT_PROCESSED":
+    if payload['status'] == "REQUEST_NOT_PROCESSED":  # API hit an error
         LOGGER.info("The API call for series " + str(api_parameters['seriesid'][0]) + " failed. Check your API key in the config file. The API returned this error: \"" + notes + "\"")
         return False
+    elif payload['status'] == "REQUEST_FAILED_INVALID_PARAMETERS":
+        LOGGER.info("The API call for series " + str(api_parameters['seriesid'][0]) + " failed due to invalid parameters passed along in the call. The API returned this error: \"" + notes + "\"")
+        LOGGER.info("The API call was as follows: " + str(api_parameters))
+        return False
     elif payload['status'] == "REQUEST_SUCCEEDED":
+        for idx, msg in enumerate(payload['message']):
+            if msg[0:14] == "Invalid Series": #  API call succeeded but Series not found
+                LOGGER.info("The API call succeeded but the series " + str(api_parameters['seriesid'][0]) + " was not found. The API returned this error: \"" + notes + "\"")
+                return False            
+            elif msg[0:29] == "No Data Available for Series ":
+                LOGGER.info("The API call succeeded but the series " + str(api_parameters['seriesid'][0]) + " returned this error: \"" + msg + "\"")
+
         message = "API call for series " + str(api_parameters['seriesid'][0]) + " succeeded in " + str(payload['responseTime']) + "ms"
         LOGGER.info(message)
         seriesid = payload['Results']['series'][0]['seriesID']    
         log_the_api_call_to_file("API PARAMETERS: " + str(api_parameters),seriesid)
         log_the_api_call_to_file("JSON REQUEST RESULTS: " + str(payload),seriesid)
     else:
-        message = "API call for series " + seriesid + " succeeded in " + str(payload['responseTime']) + "ms but returned a status of " + payload['status']
+        log_the_api_call_to_file("ERROR: " + str(api_parameters),"error")
+        log_the_api_call_to_file("JSON REQUEST RESULTS: " + str(payload),"error")
+        message = "API call succeeded in " + str(payload['responseTime']) + "ms but returned a status of " + payload['status']
         LOGGER.info(message)
-        
-    return json.loads(p.text)
+    
+    if len(payload['Results']['series'][0]['data']) == 0:
+        message = "No data returned for series " + str(payload['Results']['series'][0]['seriesID'])
+        LOGGER.info(message)
+    else:
+        return json.loads(p.text)

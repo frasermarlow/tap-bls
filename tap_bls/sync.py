@@ -28,7 +28,7 @@ def do_sync(config, state, catalog):
         
         if ("endyear" in config.keys()) and (len(config['endyear']) > 3):
             try:
-                stream_end_year = config['endyear'] if int(config['endyear']) > 1999 else now.year
+                stream_end_year = config['endyear'] if int(config['endyear']) <= now.year else now.year
             except:
                 stream_end_year = now.year
         else:
