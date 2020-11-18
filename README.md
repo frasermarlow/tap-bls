@@ -3,6 +3,7 @@
 This is a [Singer](https://singer.io) tap that produces JSON-formatted data
 following the [Singer
 spec](https://github.com/singer-io/getting-started/blob/master/SPEC.md).
+If you are reading this description on PyPi and anything looks strange please refer to [the version found on GitHub](https://github.com/frasermarlow/tap-bls)  
 
 This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://www.bls.gov/developers/) as follows:
 1) Provides a list of available BLS data series that you can add to your catalog - pick from the list or add your own.
