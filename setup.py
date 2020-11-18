@@ -6,12 +6,12 @@ with open("README.md", "r") as fh:
 
 setup(
     name="tap-bls",
-    version="0.1.3",
+    version="0.1.4",
     description="Singer.io tap for extracting data from the Bureau of Labor Statistics API 2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Stitch + Fraser Marlow",
-    authr_email="tap.bls@frasermarlow.com",
+    author_email="tap.bls@frasermarlow.com",
     url="https://github.com/frasermarlow/tap-bls",
     classifiers=["Programming Language :: Python :: 3 :: Only",
         "License :: OSI Approved :: MIT License",
