@@ -7,10 +7,10 @@ import singer
 
 LOGGER = singer.get_logger()
 
-log=False  # Set to 'True' to trigger raw API call logging
+log = False  # Set to 'True' to trigger raw API call logging
 
 def log_the_api_call_to_file(p,s):
-    if not log:
+    if log:
         with open("api_call_"+s+".txt", "a") as f:
             f.write(p+"\n\n")
     else:
@@ -26,8 +26,6 @@ def call_api(api_parameters):
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
     log_the_api_call_to_file("RAW: " + str(p.text),"raw")
     payload = json.loads(p.text)
-    
-    
 
     for note in payload['message']:
         if note:

@@ -39,7 +39,7 @@ def write_schema_to_file(series, schema_location):
     except:
         LOGGER.info('hit an error creating the schema for ' + series['seriesID'])
     else:
-        LOGGER.info('created series ' + series['seriesID'])
+        LOGGER.info('created schema for series ' + series['seriesID'])
     return
 
 def create_schemas():
