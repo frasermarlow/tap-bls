@@ -55,4 +55,10 @@ deactivate
 
 ~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv  
 
+~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json --state ~/tap-bls-config/state.json  | ~/.virtualenvs/target-csv/bin/target-csv
+
 #### After you clone the directory, set Git up to remember your credentials (will be saved in ~/.git-credentials file.) - see https://www.shellhacks.com/git-config-username-password-store-credentials
+
+# Pylint
+
+pylint ~/tap-bls/tap_bls/ -d 'broad-except,chained-comparison,empty-docstring,fixme,invalid-name,line-too-long,missing-class-docstring,missing-function-docstring,missing-module-docstring,no-else-raise,no-else-return,too-few-public-methods,too-many-arguments,too-many-branches,too-many-lines,too-many-locals,ungrouped-imports,wrong-spelling-in-comment,wrong-spelling-in-docstring,too-many-return-statements,too-many-instance-attributes'
