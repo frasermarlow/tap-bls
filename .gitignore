@@ -9,8 +9,10 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+/build
 build/
 develop-eggs/
+/dist
 dist/
 downloads/
 eggs/
@@ -21,6 +23,7 @@ parts/
 sdist/
 var/
 *.egg-info/
+/tap_bls.egg-info
 .installed.cfg
 *.egg
 tap_bls/schemas
