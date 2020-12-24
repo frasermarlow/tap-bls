@@ -1,8 +1,8 @@
+""" This file is currently unused in tap-bls """
 #!/usr/bin/env python3
 
-import datetime
-
-from singer import utils
+# import datetime
+# from singer import utils
 import singer
 
 LOGGER = singer.get_logger()
