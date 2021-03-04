@@ -50,7 +50,7 @@ The volume of data available can quickly get overwhelming.  Just one topic - [Pr
 
 A good starting point when looking for available data series is [Databases, Tables & Calculators by Subject](https://www.bls.gov/data/#api) or the [data series by topic](https://www.bls.gov/cps/cpsdbtabs.htm).
 
-With this in mind, the tap provides a framework you can use to ingest BLS data using Singer, but the catalog file would be overwhelming if we attempted to provide every available data series, even if these were maked as `unselected` in the catalog.js. So the tap is provided with a dozen different series taken form some of the most popular ones but may need configuration fo rthe data series you want to pull in.
+With this in mind, the tap provides a framework you can use to ingest BLS data using Singer, but the catalog file would be overwhelming if we attempted to provide every available data series, even if these were maked as `unselected` in the catalog.js. So the tap comes out-of-the-box with a dozen different series taken from some of the most popular ones, but you can configure it for the data series you want to pull in by editing ./series.json.
 
 ## Grab a key
 You can access BLS data without registering a key.  If you do not provide an API key, you will be restricted in the volume of data you can pull. So go to the [BLS registration page](https://data.bls.gov/registrationEngine/) and grab a key. This said, even an authenticated user has limits.
