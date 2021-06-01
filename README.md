@@ -44,7 +44,7 @@ The BLS is the most reliable source of economic data for the USA when it comes t
 
 So say you wanted to know the trend for unemployment during the COVID-19 pandemic of 2020 you could simply [query the API](https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2019&endyear=2021) and see that it rapidly rose from from 3.5% at the end of 2019 to a high of *14.7%* in April 2020, and back down to 6% by March 2021.
 
-## What does the tap provide?
+## You need to select the BLS series you want to ingest
 
 The volume of data available can quickly get overwhelming.  Just one topic - [Producer Price Indexes - has 318 distinct data series](https://www.bls.gov/ppi/expaggseriesids.htm). Others are so complex, they provide entire excel sheets full of time series references, as is the case for the [American Time Use study](https://www.bls.gov/tus/seriesid.htm). An explanation of [how the BLS structures Series IDs for each topic can be found here](https://www.bls.gov/help/hlpforma.htm).  
 
