@@ -6,7 +6,7 @@ spec](https://github.com/singer-io/getting-started/blob/master/SPEC.md).
 If you are reading this description on PyPi and anything looks strange please refer to [the version found on GitHub](https://github.com/frasermarlow/tap-bls)  
 
 This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://www.bls.gov/developers/) as follows:
-1) Provides a list of available BLS data series that you can add to your catalog - pick from the list or add your own.
+1) Provides a sample list of available BLS data series that you can add to your catalog - pick from the list or add your own.
 2) Runs the API to fetch the data series from the BLS and outputs the data to StdOut based on the [Singer.io](http://singer.io) format.
 3) Optionally updates the tap's `STATE.json` file (which is not standard, as the `TARGET.json` typically does this, but this is an option you can set in `CONFIG.json` )
 
