@@ -33,7 +33,7 @@ requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, get
 7) run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look *something* like ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json```
 8) You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as 
 ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json``` 
-but if you have `tap-csv` installed you can make pretty outputs using 
+but if you have [`tap-csv`](https://github.com/singer-io/target-csv) installed you can make pretty outputs using 
 ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
 
 You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.  If you want info on Singer `state` files [check out the docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md).
@@ -42,7 +42,7 @@ You can use a `--state` file if you like.  This tap provides the option to updat
 
 The BLS is the most reliable source of economic data for the USA when it comes to things like unemployment rates, the cost of labor, etc. It also includes Consumer Price Indices, Inflation, Workplace injuries and a bunch  of other useful stuff. [A list of topics can be found here](https://www.bls.gov/bls/topicsaz.htm) and the most popular data series (a.k.a. "The BLS Greatest Hits!") can be found [here](https://data.bls.gov/cgi-bin/surveymost?bls).
 
-So say you wanted to know the trend for unemployment during the COVID-19 pandemic of 2020 you could simply [query the API](https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2019&endyear=2020) and see that it rapidly rose from from 3.5% at the end of 2019 to a high of *14.7%* in April 2020.
+So say you wanted to know the trend for unemployment during the COVID-19 pandemic of 2020 you could simply [query the API](https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2019&endyear=2021) and see that it rapidly rose from from 3.5% at the end of 2019 to a high of *14.7%* in April 2020, and back down to 6% by March 2021.
 
 ## What does the tap provide?
 
