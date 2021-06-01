@@ -75,7 +75,7 @@ Header:	Content-Type= application/json
 The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request. This said, for the ease of execution we are going to call each series one at a time.  Sure, this eats into our 500 daily queries, but after all this data does not chage often (monthly at most).
 
 ## config.json
-This tap requires a config file altho none of the parameters are *required*. This said, it will accept the following parameters. We reccomend getting and adding your BLS API key to get the most out of the integration:
+This tap requires a config file although none of the parameters are *required*. This said, it will accept the following parameters. We reccomend getting and adding your BLS API key to get the most out of the integration:
 
 ```
 {
