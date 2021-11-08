@@ -75,7 +75,7 @@ Header:	Content-Type= application/json
 The BLS API allows us to query multiple series in a single call, using distinct series IDs.  . Registered users can include up to 50 series IDs, each separated with a comma, in the body of a request. This said, for the ease of execution we are going to call each series one at a time.  Sure, this eats into our 500 daily queries, but after all this data does not chage often (monthly at most).
 
 ## config.json
-This tap requires a config file although none of the parameters are *required*. This said, it will accept the following parameters. We reccomend getting and adding your BLS API key to get the most out of the integration:
+This tap requires a config file although none of the parameters are *required*. This said, it will accept the following parameters. We recommend getting and adding your BLS API key to get the most out of the integration:
 
 ```
 {
@@ -91,8 +91,8 @@ This tap requires a config file although none of the parameters are *required*. 
 }
 ```
 
-- *user-id* is optional.  the BLS specifies it but then it's not passed in the API call ¯\\_(ツ)_/¯
-- *api-key* is your BLS issues API key
+- *user-id* is optional.  The BLS specifies it but then it's not passed in the API call ¯\\_(ツ)_/¯
+- *api-key* is your BLS issued API key
 - *start year* is the year you want your data extract to start.  Not the limits: you can pull up to 20 years in one go, and most data seris start at 2000, so you do the math...  If left blank it will default to 2000. [ should be a year as a string - i.e. in quote marks ]
 - *endyear* is when you want the series to end.  If left blank it will default to the current year.  [ should be a year as a string - i.e. in quote marks ]
 
@@ -105,10 +105,10 @@ Parameter |  description |  values accepted
 *aspects*       | Returns data series aspect data in the format `[{'name': 'Standard Error', 'value': '-', 'footnotes': [{'code': 'A', 'text': 'Dashes indicate data not available.'}]}]`. Not many BLS series include this. |   will accept "true" or "false"
 
 
-- *disable_collection* should theoretically prevent Singer from collecting additional anonymous data on your runs, which are used to help improve singer.  You can set to "true" if you like, although it appears the additional data is collected either way ¯\\_(ツ)_/¯
+- *disable_collection* should theoretically prevent Singer from collecting additional anonymous data on your runs, which are used to help improve Singer.  You can set to "true" if you like, although it appears the additional data is collected either way ¯\\_(ツ)_/¯
 
 
-- *update_state* is an uncharacteristic feature for a Singer tap.  The *target* should update `STATE` once it know the data has been loaded to the endpoint, but for some side project this tap was designed for, this flag allows you to instruct the `tap` to update `STATE.json` at the end of the run.  So typically you would set this to 'false'.
+- *update_state* is an uncharacteristic feature for a Singer tap.  The *target* should update `STATE` once it has established that the data has been loaded to the endpoint, but this flag allows you to instruct the `tap` to update `STATE.json` at the end of the run.  So typically you would set this to 'false'.
 
 > tap --config CONFIG [--state STATE] [--catalog CATALOG]
 
