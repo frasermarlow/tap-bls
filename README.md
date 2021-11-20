@@ -36,6 +36,8 @@ requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, get
 but if you have [`tap-csv`](https://github.com/singer-io/target-csv) installed you can make pretty outputs using 
 ```~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv``` 
 
+> note: when creating the catalog, the schemas will get created following the normal 'schema' process for Singer, adding the definition files in a 'schema' folder within the tap files ( for example in `~\.virtualenvs\tap-bls\lib\python3.6\site-packages\tap_bls\schemas`).  To change the series that you want to pull you will need to delete this folder, edit the `series.json` file, then recreate the catalog by running the discovery mode in step 7 above.
+
 You can use a `--state` file if you like.  This tap provides the option to update the State from the tap, rather than the target.  If you want info on Singer `state` files [check out the docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md).
 
 ## So why is this tap cool?
