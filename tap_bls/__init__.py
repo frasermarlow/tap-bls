@@ -43,7 +43,7 @@ def main():
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
-        catalog = discover(load_schemas())
+        catalog = discover(load_schemas(args.config['series_list_file_location'] if 'series_list_file_location' in args.config else None))
         catalog.dump()
     # Otherwise run in sync mode
     else:
