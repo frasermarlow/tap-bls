@@ -5,27 +5,27 @@ fraser marlow - Nov 2020 """
 #
 from __future__ import print_function
 import sys
-import json         # parsing json files
+import json  # parsing json files
 import os
 from os import path
 
 import singer
+
 # from singer.schema import Schema
 # from singer import utils, metadata
 LOGGER = singer.get_logger()
 
+
 def get_series_list(series_list_file_location=None):
-    """ fetches the array of series to create from /series.json in the config folder 
-        
-        Parameters:
-        series_file_path (str): The file path to the series.json file. This can be absolute or relative to the execution directory. If not provided, will look for a file named "series.json" in the same directory as the config.json file
+    """fetches the array of series to create from /series.json in the config folder
+
+    Parameters:
+    series_file_path (str): The file path to the series.json file. This can be absolute or relative to the execution directory. If not provided, will look for a file named "series.json" in the same directory as the config.json file
     """
     series_to_create = {}
 
-    print('111111', series_list_file_location)
     if not series_list_file_location:
-        series_list_file_location = sys.argv[sys.argv.index('--config')+1].rsplit('/', 1)[0]+"/series.json"
-    print("22222", series_list_file_location)
+        series_list_file_location = sys.argv[sys.argv.index("--config") + 1].rsplit("/", 1)[0] + "/series.json"
     if not path.exists(series_list_file_location):
         print("I could not locate file " + series_list_file_location)
     else:
@@ -35,10 +35,10 @@ def get_series_list(series_list_file_location=None):
     return series_to_create
 
 
-
 def get_abs_path(thepath):
     """ fetch the absolute path of a file """
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), thepath)
+
 
 def write_schema_to_file(series, schema_location):
     """ writes the schema to file """
@@ -46,19 +46,35 @@ def write_schema_to_file(series, schema_location):
         with open(schema_location, "w") as jsonFile:
             json.dump(series, jsonFile)
     except Exception as e:
-        LOGGER.info('hit an error creating the schema for %s - %s', series['seriesID'], e)
+        LOGGER.info("hit an error creating the schema for %s - %s", series["seriesID"], e)
     else:
-        LOGGER.info('created schema for series %s', series['seriesID'])
+        LOGGER.info("created schema for series %s", series["seriesID"])
     return
+
 
 def create_schemas(series_list_file_location=None):
     """ creates schemas """
-    print('creating schemas')
+    print("creating schemas")
     schemas_to_create = get_series_list(series_list_file_location)
-    for series in schemas_to_create['series']:
-        if str(series['create_this_schema'].lower()) == "true":
-            schema_json = {"type": ["null", "object"], "additionalProperties":["schema", "record", "type", "stream"], "seriesID" : series['seriesid'], "series_description": series['description'], "key_properties": ["SeriesID", "full_period"], "bookmark_properties": ["time_extracted"], "properties":{"SeriesID":{"type":["null", "string"]}, "period":{"type":["null", "string"]}, "value":{"type":["null", "number"]}, "footnotes":{"type":["null", "string"]}, "full_period":{"type":["null", "string"], "format":"date-time"}, "time_extracted":{"type":["null", "string"], "format":"date-time"}}}
-            schema_file = series['seriesid'] + ".json"
-            schema_location = get_abs_path('schemas') + "/" + schema_file
+    for series in schemas_to_create["series"]:
+        if str(series["create_this_schema"].lower()) == "true":
+            schema_json = {
+                "type": ["null", "object"],
+                "additionalProperties": ["schema", "record", "type", "stream"],
+                "seriesID": series["seriesid"],
+                "series_description": series["description"],
+                "key_properties": ["SeriesID", "full_period"],
+                "bookmark_properties": ["time_extracted"],
+                "properties": {
+                    "SeriesID": {"type": ["null", "string"]},
+                    "period": {"type": ["null", "string"]},
+                    "value": {"type": ["null", "number"]},
+                    "footnotes": {"type": ["null", "string"]},
+                    "full_period": {"type": ["null", "string"], "format": "date-time"},
+                    "time_extracted": {"type": ["null", "string"], "format": "date-time"},
+                },
+            }
+            schema_file = series["seriesid"] + ".json"
+            schema_location = get_abs_path("schemas") + "/" + schema_file
 
             write_schema_to_file(schema_json, schema_location)
