@@ -54,7 +54,6 @@ def write_schema_to_file(series, schema_location):
 
 def create_schemas(series_list_file_location=None):
     """ creates schemas """
-    print("creating schemas")
     schemas_to_create = get_series_list(series_list_file_location)
     for series in schemas_to_create["series"]:
         if str(series["create_this_schema"].lower()) == "true":
