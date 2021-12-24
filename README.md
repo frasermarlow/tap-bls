@@ -32,10 +32,11 @@ requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, get
 2. Set the local version of Python to 3.5.3: `pyenv local 3.5.3`
 3. Install `wheel` with `pip install --upgrade pip wheel`
 4. Install the tap in your venv using `pip install tap-bls`
-5. make a copy of [`sample_config.json`](https://raw.githubusercontent.com/frasermarlow/tap-bls/master/sample_config.json) (as `config.json`) and [`series.json`](https://raw.githubusercontent.com/frasermarlow/tap-bls/master/series.json) (as `series.json`) from the root of the repo into your preferred configuration folder (for example I use `~/tap-bls-config`)
-6. edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key. You can even leave this blank if you just want to get started.
-7. run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look _something_ like `~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json`
-8. You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as
+5. exit the virtual environment with `deactivate`
+6. make a copy of [`sample_config.json`](https://raw.githubusercontent.com/frasermarlow/tap-bls/master/sample_config.json) (as `config.json`) and [`series.json`](https://raw.githubusercontent.com/frasermarlow/tap-bls/master/series.json) (as `series.json`) from the root of the repo into your preferred configuration folder (for example I use `~/tap-bls-config`)
+7. edit the `config.json` file - the main thing you want to change is the API key ("api-key": in the json file) and put in your BLS API key. You can even leave this blank if you just want to get started.
+8. run the tap once in 'Discovery mode' to build your `catalog.json` file - your command will look _something_ like `~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > ~/tap-bls-config/catalog.json`
+9. You can now run the tap in standard mode - if you just want to test, run it 'unpiped' with a command such as
    `~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json`
    but if you have [`tap-csv`](https://github.com/singer-io/target-csv) installed you can make pretty outputs using
    `~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv`
