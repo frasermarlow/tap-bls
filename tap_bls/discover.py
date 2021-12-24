@@ -5,7 +5,6 @@ import os
 import json
 
 
-
 from singer import metadata
 from singer.schema import Schema
 from singer.catalog import Catalog, CatalogEntry
@@ -17,36 +16,37 @@ def get_abs_path(thepath):
     """ get the file absolute path """
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), thepath)
 
+
 # go into the local 'schemas' folder, and pare through all the .json files you find there.
-def load_schemas():
+def load_schemas(series_list_file_location=None):
     """ load the schemas """
     ### Load schemas from schemas folder ###
     schemas = {}
-    schemas_path = get_abs_path('schemas')
+    schemas_path = get_abs_path("schemas")
 
     # If the '/schemas/ folder is missing, create it.
     if not os.path.isdir(schemas_path):
         os.mkdir(schemas_path)
 
     # If no schemas are found in the /schemas/ folder, then generate them using create_schemas.py
-    if [name for name in os.listdir(schemas_path) if os.path.isfile(os.path.join(schemas_path, name))]:
-        create_schemas()
+    if len([name for name in os.listdir(schemas_path) if os.path.isfile(os.path.join(schemas_path, name))]) == 0:
+        create_schemas(series_list_file_location)
 
     # now grab the .json files in /schemas/ and output the catalog.json file.
-
     for filename in os.listdir(schemas_path):
-        path = schemas_path + '/' + filename
-        file_raw = filename.replace('.json', '')
+        path = schemas_path + "/" + filename
+        file_raw = filename.replace(".json", "")
         with open(path) as f:
             schemas[file_raw] = Schema.from_dict(json.load(f))
-    return schemas   # returns a 'dict' that contains <class 'singer.schema.Schema'> objects
+    return schemas  # returns a 'dict' that contains <class 'singer.schema.Schema'> objects
+
 
 def discover(raw_schemas):
     """ run the discover mode """
     streams = []
     for stream_id, schema in raw_schemas.items():
         # TODO: populate any metadata and stream's key properties here..
-        stream_metadata = [{"metadata":{"inclusion":"available", "selected":"true"}, "breadcrumb":[]}]
+        stream_metadata = [{"metadata": {"inclusion": "available", "selected": "true"}, "breadcrumb": []}]
         key_properties = ["year"]
         rep_key = ["year"]
         rep_method = None
@@ -63,10 +63,11 @@ def discover(raw_schemas):
                 row_count=None,
                 stream_alias=None,
                 replication_method=rep_method,
-                schema=schema
+                schema=schema,
             )
         )
-    return Catalog(streams) # object with class 'singer.catalog.Catalog'
+    return Catalog(streams)  # object with class 'singer.catalog.Catalog'
+
 
 #  everything below is from the Adroll tap
 
@@ -80,6 +81,7 @@ def _load_schemas():
         with open(path) as f:
             schemas[file_raw] = json.load(f)
     return schemas
+
 
 def do_discover():
     """ run the discovery process """
@@ -100,7 +102,7 @@ def do_discover():
                 valid_replication_keys=stream.replication_keys,
                 replication_method=stream.replication_method,
             ),
-            "key_properties": stream.key_properties
+            "key_properties": stream.key_properties,
         }
         catalog_entries.append(catalog_entry)
 
