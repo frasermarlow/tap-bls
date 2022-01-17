@@ -1,6 +1,7 @@
 """ Core Synch module for tap-BLS """
 #!/usr/bin/env python3
 import datetime     # time and dates functions
+import dateutil
 import singer
 # from singer import Transformer, metadata
 import pytz         # timestamp localization / timezones
@@ -165,23 +166,16 @@ def do_sync(config, state, catalog):
                         footnotes = footnotes + footnote['text'] + ','
 
                 next_row = {
-                    "type":"RECORD",
-                    "stream": seriesId,
-                    "time_extracted": time_extracted,
-                    "schema":seriesId,
-                    "frequency":series_frequency,
-                    "record":{
-                        "SeriesID": seriesId,
-                        "year": year,
-                        "period": period,
-                        "value": value,
-                        "footnotes":footnotes[0:-1],
-                        "month": str(month),
-                        "quarter":str(quarter),
-                        "time_extracted":time_extracted,
-                        "full_period":full_period
-                        }
-                    }
+                    "SeriesID": seriesId,
+                    "year": year,
+                    "period": period,
+                    "value": value,
+                    "footnotes":footnotes[0:-1],
+                    "month": str(month),
+                    "quarter":str(quarter),
+                    "time_extracted":time_extracted,
+                    "full_period":full_period
+                }
 
 
                 if ("calculations" in config.keys()) and (config['calculations'].lower() == "true"):
@@ -213,17 +207,17 @@ def do_sync(config, state, catalog):
                     else:
                         next_row['annualaverage'] = None
 
-                # write one or more rows to the stream:
-                singer.write_records(stream.tap_stream_id, [next_row])
+                # write one row to the stream:
+                singer.write_record(stream.tap_stream_id, next_row, time_extracted=dateutil.parser.isoparse(time_extracted))
                 # capture stream state
                 if bookmark_column:
 
                     if is_sorted:
                         # update bookmark to latest value - this is redundant for tap-bls
-                        singer.write_state({stream.tap_stream_id: next_row["record"][bookmark_column[0]]})
+                        singer.write_state({stream.tap_stream_id: next_row[bookmark_column[0]]})
                     else:
                         # if data unsorted, save max value until end of writes.  tap-bls goes by the year and will use this approach
-                        max_bookmark = max(max_bookmark, int(next_row["record"][bookmark_column[0]]))
+                        max_bookmark = max(max_bookmark, int(next_row[bookmark_column[0]]))
 
         if bookmark_column and not is_sorted:
             singer.write_state({stream.tap_stream_id: max_bookmark})
