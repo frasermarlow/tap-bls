@@ -158,7 +158,7 @@ def do_sync(config, state, catalog):
                 # if series_frequency == "M":
                 #    next_row['month'] = item['something']
 
-                full_period = str(year) + "-" + str("{0:0=2d}".format(month)) + "-01T00:00:00-04:00"
+                full_period = str(year) + "-" + str("{0:0=2d}".format(max(month, 1))) + "-01T00:00:00-04:00"
                 footnotes = ""
                 for footnote in item['footnotes']:
                     if footnote:
