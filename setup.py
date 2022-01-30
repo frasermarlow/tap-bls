@@ -23,7 +23,8 @@ setup(
         "jsonschema==2.6.0","pylint==1.8.3",
         "pytz==2018.4","pytzdata==2020.1",
         "requests==2.20.0","simplejson==3.11.1",
-        "singer-encodings==0.0.3","singer-python==5.9.0","singer-tools==0.4.1"
+        "singer-encodings==0.0.3","singer-python==5.9.0","singer-tools==0.4.1",
+        "python-dateutil==2.8.2"
     ],
     entry_points="""
     [console_scripts]

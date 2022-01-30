@@ -41,16 +41,18 @@ def main():
     if not args.state:    # if no state was provided
         generate_state()        # ... generate one
 
+    series_list_file_location = args.config.get('series_list_file_location', None)
+
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
-        catalog = discover(load_schemas(args.config['series_list_file_location'] if 'series_list_file_location' in args.config else None))
+        catalog = discover(load_schemas(series_list_file_location))
         catalog.dump()
     # Otherwise run in sync mode
     else:
         if args.catalog:
             catalog = args.catalog
         else:
-            catalog = discover(load_schemas())
+            catalog = discover(load_schemas(series_list_file_location))
             LOGGER.info("You did not specify a catalog.json file, so I will create one.")
         if not catalog.streams:
             LOGGER.info("The catalog.json file exists, but is empty.")
