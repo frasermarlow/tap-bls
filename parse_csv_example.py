@@ -9,11 +9,10 @@ In this case the output is formatted as javascript 'var's that get used in produ
 import glob
 import os
 import datetime
-
 # ----------------------------- Variables ------------------------------
 
 bls_data_location="/home/ubuntu/bls-data/"  # folder where the singer tap places the .csv files
-output_file = "output.csv"                  # name of the output file where the new data format will be saved
+output_file = "/home/ubuntu/bls-data/output.txt"                  # name of the output file where the new data format will be saved
 
 series = [
     {"series":"JTS000000000000000QUR","variable":"quitsData","comment":"QUITS: JTS000000000000000QUR [ https://api.bls.gov/publicAPI/v2/timeseries/data/JTS000000000000000QUR?latest=true ]"},
@@ -32,7 +31,6 @@ def find_nth(haystack, needle, n):
     return start
 
 #  Main
-
 
 output = ""
 
@@ -75,13 +73,12 @@ for s in series:
                 if i != 0:
                     output += " | "
                 i += 1
-        output += "\n// end of series\n"
-
-        x = open(output_file, "w")
-        x.writelines(output)
-        x.close()
+        output += "\n// end of series\n\n"
 
     else: # NO FILES FOUND
         print(f"I could not locate the data file for {s}.")
-       
-      
+
+x = open(output_file, "w")
+x.writelines(output)
+x.close()
+print("Data saved to " + output_file)
