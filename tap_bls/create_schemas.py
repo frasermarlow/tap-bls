@@ -66,7 +66,7 @@ def create_schemas(series_list_file_location=None):
                 "bookmark_properties": ["time_extracted"],
                 "properties": {
                     "SeriesID": {"type": ["null", "string"]},
-                    "year": {"type": ["null", "number"]},
+                    "year": {"type": ["null", "string"]},
                     "period": {"type": ["null", "string"]},
                     "value": {"type": ["null", "number"]},
                     "footnotes": {"type": ["null", "string"]},
