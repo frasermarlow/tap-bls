@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
 '''
+
+Compatible with tap-bls v 0.1.7
+
 This file is provided as an example of pulling out BLS data from a .csv file that itself came from the BLS API.
 I hope this serves as a useful template if you need to parse out the actual series datapoints.
 In this case the output is formatted as javascript 'var's that get used in producing a graph using chartjs.
@@ -32,21 +35,25 @@ def find_nth(haystack, needle, n):
 
 #  Main
 
+data_column = 4  # The data is found in the fourth column of the .csv file
+full_period = 9  # The full_period timestamp is in the 9th column of the .csv file
 output = ""
 
 for s in series:
-    list_of_files = glob.glob(bls_data_location+s["series"]+"-*") # * means all if need specific format then *.csv
+    list_of_files = glob.glob(bls_data_location+s["series"]+"-*")
+
     if list_of_files:
         latest_file = max(list_of_files, key=os.path.getctime)
         data = []
         dates = []
         prelim = []
+        print(latest_file)
 
         with open(latest_file, 'r') as f:
             for line in f:
-                if line.startswith("RECORD"):
-                    data.append(line[find_nth(line,",", 8)+1:find_nth(line,",", 9)])
-                    date_time_str = line[find_nth(line,",", 13)+1:find_nth(line,",", 13)+11]
+                if line.startswith(s["series"]):
+                    data.append(line[find_nth(line,",", data_column-1):find_nth(line,",", data_column)])
+                    date_time_str = line[find_nth(line,",", full_period-1)+1:find_nth(line,",", full_period-1)+11]
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
                     dates.append(date_time_obj)
                     if line[find_nth(line,",", 9)+1:find_nth(line,",", 10)]== "preliminary":
@@ -76,7 +83,7 @@ for s in series:
         output += "\n// end of series\n\n"
 
     else: # NO FILES FOUND
-        print(f"I could not locate the data file for {s}.")
+        print(f"I could not locate the data file for {s['series']}.")
 
 x = open(output_file, "w")
 x.writelines(output)
