@@ -138,7 +138,7 @@ def do_sync(config, state, catalog):
                     quarter = round((int(period[1]+period[2])/3)+0.3)
                 elif period[0] == 'Q':
                     month = 0
-                    quarter = period[2]
+                    quarter = int(period[2])
                 elif period[0] == 'S':
                     month = 0
                     quarter = 0
@@ -149,7 +149,7 @@ def do_sync(config, state, catalog):
                 else:
                     month = ""
                     quarter = ""
-                value = item['value']
+                value = float(item['value'])
 
                 # if series_frequency == "A":
                 #    next_row['year'] = item['something']
@@ -171,8 +171,8 @@ def do_sync(config, state, catalog):
                     "period": period,
                     "value": value,
                     "footnotes":footnotes[0:-1],
-                    "month": str(month),
-                    "quarter":str(quarter),
+                    "month":  month,
+                    "quarter": quarter,
                     "time_extracted":time_extracted,
                     "full_period":full_period
                 }
