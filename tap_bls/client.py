@@ -64,7 +64,7 @@ def call_api(api_parameters):
                 return False
             elif msg[0:29] == "No Data Available for Series ":
                 LOGGER.info("The API call succeeded but the series %s returned this error: \"%s\"", str(api_parameters['seriesid'][0]), msg)
-                return False
+                LOGGER.info("This may indicate a partial result set, so I am going to proceed.")
             else:
                 message = "API call for series " + str(api_parameters['seriesid'][0]) + " succeeded in " + str(payload['responseTime']) + "ms"
                 LOGGER.info(message)
