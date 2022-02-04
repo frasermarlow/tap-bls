@@ -75,7 +75,7 @@ def do_sync(config, state, catalog):
         json_data = call_api(the_call)
 
         if not json_data:
-            return
+            continue
 
         raw_schema = stream.schema.to_dict()
 
