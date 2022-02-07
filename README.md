@@ -109,6 +109,7 @@ This tap requires a config file although none of the parameters are _required_. 
 - _api-key_ is your BLS issued API key
 - _start year_ is the year you want your data extract to start. Not the limits: you can pull up to 20 years in one go, and most data seris start at 2000, so you do the math... If left blank it will default to 2000. [ should be a year as a string - i.e. in quote marks ]
 - _endyear_ is when you want the series to end. If left blank it will default to the current year. [ should be a year as a string - i.e. in quote marks ]
+- _aspects_ is an option you will find in the API documentation but setting this to 'true' has caused issues (in my experience) whereby some data points are no longer provided in the returning payload.
 - _series_list_file_location_ is an optional absolute or relative path to the series.json. If not provided (and if the schemas directory is empty), the tap will look for a file named `series.json` in the same location as the `config.json` file
 
 The next three parameters are explained in more detail [on the BLS website](https://www.bls.gov/developers/api_signature_v2.htm#parameters)
