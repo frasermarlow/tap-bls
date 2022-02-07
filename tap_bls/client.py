@@ -19,7 +19,7 @@ def log_the_api_call_to_file(p, s):
         return
 
 def call_api(api_parameters):
-    """ gathers parameters and makes the API call. Returns FALSE is call fails """
+    """ gathers parameters and makes the API call. Returns FALSE if call fails """
     notes = ""
     a = 0
     headers = {'Content-type': 'application/json'}
