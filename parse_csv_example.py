@@ -14,11 +14,12 @@ import os
 import datetime
 # ----------------------------- Variables ------------------------------
 
-bls_data_location="/home/ubuntu/bls-data/"  # folder where the singer tap places the .csv files
+bls_data_location="/home/ubuntu/bls-data/"                        # folder where the singer tap places the .csv files
 output_file = "/home/ubuntu/bls-data/output.txt"                  # name of the output file where the new data format will be saved
 
 series = [
     {"series":"JTS000000000000000QUR","variable":"quitsData","comment":"QUITS: JTS000000000000000QUR [ https://api.bls.gov/publicAPI/v2/timeseries/data/JTS000000000000000QUR?latest=true ]"},
+    {"series":"CIU1010000000000A", "variable": "EmplCostIndexData","comment": "Employment Cost Index (NAICS): https://data.bls.gov/timeseries/CIU1010000000000A"},
     {"series":"JTS000000000000000LDR","variable":"layoffsData","comment":"LAYOFFS: https://data.bls.gov/timeseries/JTS000000000000000LDR"},
     {"series":"LNS11300000","variable":"laborparticipationData","comment":"LABOR PARTICIPATION: https://data.bls.gov/timeseries/LNS11300000"},
     {"series":"LNS14000000","variable":"unemploymentData","comment":"UNEMPLOYMENT: https://data.bls.gov/timeseries/LNS14000000"}
@@ -27,13 +28,16 @@ series = [
 # ----------------------------- Functions -------------------------------
 
 def find_nth(haystack, needle, n):
+    ''' helper function.  Finds nth instance of a string within a string '''
     start = haystack.find(needle)
     while start >= 0 and n > 1:
         start = haystack.find(needle, start+len(needle))
         n -= 1
     return start
 
-#  Main
+#  ------------------------------  Main  ---------------------------------
+
+print("---- Running the bls-transform process ----")
 
 data_column = 4  # The data is found in the fourth column of the .csv file
 full_period = 9  # The full_period timestamp is in the 9th column of the .csv file
@@ -47,12 +51,12 @@ for s in series:
         data = []
         dates = []
         prelim = []
-        print(latest_file)
+        print("Pulling data from " + s["series"])
 
         with open(latest_file, 'r') as f:
             for line in f:
                 if line.startswith(s["series"]):
-                    data.append(line[find_nth(line,",", data_column-1):find_nth(line,",", data_column)])
+                    data.append(line[find_nth(line,",", data_column-1)+1:find_nth(line,",", data_column)])
                     date_time_str = line[find_nth(line,",", full_period-1)+1:find_nth(line,",", full_period-1)+11]
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
                     dates.append(date_time_obj)
@@ -83,9 +87,10 @@ for s in series:
         output += "\n// end of series\n\n"
 
     else: # NO FILES FOUND
-        print(f"I could not locate the data file for {s['series']}.")
+        print(f"Python Transform says: I could not locate the data file for {s['series']}. Please make sure the API call produced results and saved the .csv file in the right place.")
 
-x = open(output_file, "w")
-x.writelines(output)
-x.close()
-print("Data saved to " + output_file)
+if len(output) == 0:
+    print("There was no data to output.")
+else:
+    x = open(output_file, "w"); x.writelines(output); x.close()
+    print("Data saved to " + output_file)
