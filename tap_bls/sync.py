@@ -149,7 +149,7 @@ def do_sync(config, state, catalog):
                 else:
                     month = ""
                     quarter = ""
-                value = float(item['value'])
+                value = item['value']
 
                 # if series_frequency == "A":
                 #    next_row['year'] = item['something']
