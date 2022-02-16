@@ -177,7 +177,6 @@ def do_sync(config, state, catalog):
                     "full_period":full_period
                 }
 
-
                 if ("calculations" in config.keys()) and (config['calculations'].lower() == "true"):
                     if "calculations" in item.keys():
                         if "net_changes" in item["calculations"].keys():
