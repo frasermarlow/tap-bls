@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="tap-bls",
-    version="0.1.8",
+    version="0.1.9",
     description="Singer.io tap for extracting data from the Bureau of Labor Statistics API 2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
