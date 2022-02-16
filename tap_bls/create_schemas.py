@@ -68,7 +68,7 @@ def create_schemas(series_list_file_location=None):
                     "SeriesID": {"type": ["null", "string"]},
                     "year": {"type": ["null", "string"]},
                     "period": {"type": ["null", "string"]},
-                    "value": {"type": ["null", "number"]},
+                    "value": {"type": ["null", "string"]},
                     "footnotes": {"type": ["null", "string"]},
                     "full_period": {"type": ["null", "string"], "format": "date-time"},
                     "time_extracted": {"type": ["null", "string"], "format": "date-time"},
