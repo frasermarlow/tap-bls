@@ -40,7 +40,7 @@ mv sample_config.json config.json
 
 # EDIT CONFIG AND ADD YOUR KEY
 
-# now we can build the catalog - I use 'tap-foo-config' to store a tap's config, catalog and state, so note this is NOT the tap's root directory.  
+#### now we can build the catalog - I use 'tap-foo-config' to store a tap's config, catalog and state, so note this is NOT the tap's root directory.
 ~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json    
 
 # install tap-csv
