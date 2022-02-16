@@ -24,6 +24,7 @@ sdist/
 var/
 *.egg-info/
 /tap_bls.egg-info
+/.idea
 .installed.cfg
 *.egg
 tap_bls/schemas
