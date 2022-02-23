@@ -1,17 +1,22 @@
 #!/usr/bin/python
 
 '''
-
-Compatible with tap-bls v 0.1.7
+Compatible with tap-bls v 0.1.10
 
 This file is provided as an example of pulling out BLS data from a .csv file that itself came from the BLS API.
 I hope this serves as a useful template if you need to parse out the actual series datapoints.
 In this case the output is formatted as javascript 'var's that get used in producing a graph using chartjs.
+
+Updated 2/23/2022 to make use of Pandas library
 '''
 
 import glob
 import os
 import datetime
+import pandas
+
+verb = True # Verbose mode.
+
 # ----------------------------- Variables ------------------------------
 
 bls_data_location="/home/ubuntu/bls-data/"                        # folder where the singer tap places the .csv files
@@ -25,19 +30,17 @@ series = [
     {"series":"LNS14000000","variable":"unemploymentData","comment":"UNEMPLOYMENT: https://data.bls.gov/timeseries/LNS14000000"}
 ]
 
-# ----------------------------- Functions -------------------------------
+#  ----------------------- Helper functions -----------------------------
 
-def find_nth(haystack, needle, n):
-    ''' helper function.  Finds nth instance of a string within a string '''
-    start = haystack.find(needle)
-    while start >= 0 and n > 1:
-        start = haystack.find(needle, start+len(needle))
-        n -= 1
-    return start
+def user_warning(*args):
+    if verb:
+        for t in args:
+            print(t)
+
 
 #  ------------------------------  Main  ---------------------------------
 
-print("---- Running the bls-transform process ----")
+user_warning("---- Running the bls-transform process ----")
 
 data_column = 4  # The data is found in the fourth column of the .csv file
 full_period = 9  # The full_period timestamp is in the 9th column of the .csv file
@@ -51,21 +54,24 @@ for s in series:
         data = []
         dates = []
         prelim = []
-        print("Pulling data from " + s["series"])
+        user_warning("Pulling data from " + s["series"])
 
-        with open(latest_file, 'r') as f:
-            for line in f:
-                if line.startswith(s["series"]):
-                    data.append(line[find_nth(line,",", data_column-1)+1:find_nth(line,",", data_column)])
-                    date_time_str = line[find_nth(line,",", full_period-1)+1:find_nth(line,",", full_period-1)+11]
-                    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
-                    dates.append(date_time_obj)
-                    if line[find_nth(line,",", 9)+1:find_nth(line,",", 10)]== "preliminary":
-                        prelim.append(date_time_obj)
+        dp = pandas.read_csv(latest_file)
 
+        # VALUES -------------------
+        dp = dp.astype({'value': 'str'})
+        data = dp['value'].tolist()
         data.reverse()
-        date_min = min(dates).strftime('%b %Y')
-        date_max = max(dates).strftime('%b %Y')
+
+        # PERIODS -------------------
+        periods = dp["full_period"].tolist()
+        periods_array = [datetime.datetime.strptime(date_time_str[0:10], '%Y-%m-%d') for date_time_str in periods]
+        date_min = min(periods_array).strftime('%b %Y')
+        date_max = max(periods_array).strftime('%b %Y')
+
+        # PRELIMINARY FLAG -------------------
+
+        prelims = dp.loc[dp['footnotes'].notnull()]
 
         if s.get("comment") is not None :
             output += "// " + s["comment"] + "\n"
@@ -76,21 +82,20 @@ for s in series:
         output += str(data)
 
         output += "; // Series from " + date_min + " to " + date_max
-        if len(prelim) > 0:
+
+        if prelims.empty == False:
             i = 0
-            output += " | The data for the following dates are preliminary: "
-            for d in prelim:
-                output += d.strftime('%b %Y')
-                if i != 0:
-                    output += " | "
-                i += 1
+            for index, row in prelims.iterrows():
+                period = datetime.datetime.strptime(row['full_period'][0:10], '%Y-%m-%d')
+                output += " | " + period.strftime('%b %Y') + " marked '" + row['footnotes'] + "'"
+
         output += "\n// end of series\n\n"
 
     else: # NO FILES FOUND
-        print(f"Python Transform says: I could not locate the data file for {s['series']}. Please make sure the API call produced results and saved the .csv file in the right place.")
+        user_warning(f"Python Transform says: I could not locate the data file for {s['series']}. Please make sure the API call produced results and saved the .csv file in the right place.")
 
 if len(output) == 0:
-    print("There was no data to output.")
+    user_warning("There was no data to output.")
 else:
     x = open(output_file, "w"); x.writelines(output); x.close()
-    print("Data saved to " + output_file)
+    user_warning("Data saved to " + output_file)
