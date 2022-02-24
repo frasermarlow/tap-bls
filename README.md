@@ -19,7 +19,6 @@ Copyright &copy; 2020 Stitch
 
 https://pypi.org/project/tap-bls/  
 `pip install tap-bls`
-Version 0.1.7 released 01/30/2022
 
 ## Extract BLS (Bureau of Labor Statistics) data using Singer.io
 
