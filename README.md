@@ -13,7 +13,6 @@ This tap pulls raw data from the [Bureau of Labor Statistics (BLS) API](https://
 
 ---
 
-Copyright &copy; 2020 Stitch
 
 ## PyPi package repo:
 
@@ -41,7 +40,7 @@ requirements: Python 3.5.3 & modules os, pytz, sys, json, datetime, backoff, get
    but if you have [`tap-csv`](https://github.com/singer-io/target-csv) installed you can make pretty outputs using
    `~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --catalog ~/tap-bls-config/catalog.json | ~/.virtualenvs/target-csv/bin/target-csv`
 
-> note: when creating the catalog, the schemas will get created following the normal 'schema' process for Singer, adding the definition files in a 'schema' folder within the tap files ( for example in `~\.virtualenvs\tap-bls\lib\python3.6\site-packages\tap_bls\schemas`). To change the series that you want to pull you will need to delete this folder, edit the `series.json` file, then recreate the catalog by running the discovery mode in step 7 above.
+> note: when creating the catalog, the schemas will get created following the normal 'schema' process for Singer, adding the definition files in a 'schema' folder within the tap files ( for example in `~\.virtualenvs\tap-bls\lib\python3.6\site-packages\tap_bls\schemas`). To change the series that you want to pull, (1) make sure you have the `purge_schemas_on_discovery` parameter set to `true` in the config file, (2) edit the `series.json` file, then (3) recreate the catalog by running the discovery mode in step 7 above.
 
 You can use a `--state` file if you like. This tap provides the option to update the State from the tap, rather than the target. If you want info on Singer `state` files [check out the docs](https://github.com/singer-io/getting-started/blob/master/docs/CONFIG_AND_STATE.md).
 
@@ -100,7 +99,8 @@ This tap requires a config file although none of the parameters are _required_. 
   "aspects": "false",
   "disable_collection": "true",
   "update_state": "false",
-  "series_list_file_location": "<absolute or relative path>/series.json"
+  "series_list_file_location": "<absolute or relative path>/series.json",
+  "purge_schemas_on_discovery": true
 }
 ```
 
@@ -110,6 +110,7 @@ This tap requires a config file although none of the parameters are _required_. 
 - _endyear_ is when you want the series to end. If left blank it will default to the current year. [ should be a year as a string - i.e. in quote marks ]
 - _aspects_ is an option you will find in the API documentation but setting this to 'true' has caused issues (in my experience) whereby some data points are no longer provided in the returning payload.
 - _series_list_file_location_ is an optional absolute or relative path to the series.json. If not provided (and if the schemas directory is empty), the tap will look for a file named `series.json` in the same location as the `config.json` file
+- _purge_schemas_on_discovery_ if set to `true`, all files in the /schema directory will be deleted when the tap is run in discovery mode.
 
 The next three parameters are explained in more detail [on the BLS website](https://www.bls.gov/developers/api_signature_v2.htm#parameters)
 
@@ -125,7 +126,7 @@ The next three parameters are explained in more detail [on the BLS website](http
 
 > tap --config CONFIG [--state STATE] [--catalog CATALOG]
 
-STATE and CATALOG are optional arguments both pointing to their own JSON file. If you do not specify a `state.json` file the tap will generate one in the same folder at the `config.json` file. tap-bls will use `STATE.json` to remember information from the previous invocation such as the point where it left off, namely the year of the most recent data point.
+STATE and CATALOG are optional arguments both pointing to their own JSON file. If you do not specify a `state.json` file the tap will generate one in the same folder as the `config.json` file. tap-bls will use `STATE.json` to remember information from the previous invocation such as the point where it left off, namely the year of the most recent data point.
 
 ## Schema fields
 
@@ -160,12 +161,13 @@ STATE and CATALOG are optional arguments both pointing to their own JSON file. I
 
 ## Autogenerating the SCHEMAs
 
-Typically, the file `CATALOG.json` (generated during discovery) is used to filter which streams should be synced from all the possible streams available in the /schemas/ folder.
+Typically, the file `CATALOG.json` (generated during discovery) filters which streams should be synced from all the possible streams available in the /schemas/ folder.
 
-tap-bls behaves a bit differently because of the enormous number of potential data series you might pull from the BLS. Therefore it works as follows:
+tap-bls behaves differently because of the enormous number of potential data series you might pull from the BLS. Therefore it works as follows:
 
 1. If no `.json` schema files are to be found in the `tap_bls/schemas/` folder, the tap will generate them for you based on the `series.json` file. The tap will look for the `series.json` file in the same folder as your `config.json` file. This allows you to rapidly select which BLS data series you want to work with. A sample 'series.json' file is found in the root of this repo with a bunch of the most popular data seris included, so you can just copy that to your main config folder.
 2. Once you have a set of schema files created (manually or using the automated approach above) you can generate the Singer `catalog.json` file using the tap's --discover mode using a command such as `~/.virtualenvs/tap-bls/bin/tap-bls --config ~/tap-bls-config/config.json --discover > catalog.json` (your set up may use a different folder than 'tap-bls-config' - that is up to you.)
+3. Note that to change the bls series you pull, you will modify the `series.json` to include just the series you want to pull, then rerun the tap in discovery mode to overwrite the schemas.  This will only work if you have the parameter `purge_schemas_on_discovery` set to `true` in your config.json file.
 
 ## A note on series frequency
 
@@ -177,7 +179,7 @@ As far as I can figure out, the BLS provides data series in the following freque
 - Semi-Annually (6 months) - uncommon, see [CUURS12BSAF](https://data.bls.gov/timeseries/CUURS12BSAF)
 - Annual - fairly common
 
-Bi-monthly and semi-annual appears to be most prevalent in data series related to consumer price index reports.
+Bi-monthly and semi-annual appear to be most prevalent in data series related to consumer price index reports.
 
 Note that where available (and where set to 'true' in `config.json`), annual averages are should as `M13` in the dataset.
 
