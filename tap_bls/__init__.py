@@ -1,19 +1,31 @@
-""" tap-bls core module 2020-12-7 """
+"""
+    tap-bls core module
+    Original creation date: 2020-12-7
+    Updated 2024-05-30
+"""
+
 #!/usr/bin/env python3
 from __future__ import print_function
 import sys
 import os
-import json         # parsing json files
-import datetime     # time and dates functions
-import requests     # http and api calls library  TODO: Can this be removed here?
+# import json         # parsing json files
+# import datetime     # time and dates functions
+# import requests     # http and api calls library  TODO: Can this be removed here?
 
 import singer
 from singer import utils, metadata
-from singer.catalog import Catalog, CatalogEntry
+# from singer.catalog import Catalog, CatalogEntry
 
 from .update_state import generate_state, update_state
 from .discover import discover, load_schemas
 from .sync import do_sync
+
+REQUIRED_CONFIG_KEYS = []  # technically you do not require an API key for this to work, but you will hit limits
+LOGGER = singer.get_logger()
+
+SCHEMA_DIR = 'schemas'  # Define the relative path to the schema directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SCHEMA_DIR_ABSOLUTE = os.path.join(BASE_DIR, SCHEMA_DIR)
 
 def whatisthis(item):
     """ For dumb testing - delete this function later """
@@ -24,9 +36,21 @@ def whatisthis(item):
         print("Error '{0}' occured. Arguments {1}.".format(e.message, e.args))
     print('\n', item, '\n'+ item_name +' IS TYPE: ', type(item), '\n')
 
-REQUIRED_CONFIG_KEYS = []  # technically you do not require an API key for this to work, but you will hit limits
 
-LOGGER = singer.get_logger()
+def delete_schema_files():
+    """
+    If the config parameter 'purge_schemas_on_discovery' is set to 'true' this function will purge out the old schema files prior to them being written back in based on the standard 'discovery' process.
+    :return: None
+    """
+    if os.path.exists(SCHEMA_DIR_ABSOLUTE):
+        LOGGER.info(SCHEMA_DIR_ABSOLUTE)
+        for filename in os.listdir(SCHEMA_DIR_ABSOLUTE):
+            file_path = os.path.join(SCHEMA_DIR_ABSOLUTE, filename)
+            if os.path.isfile(file_path) and filename.endswith('.json'):
+                os.remove(file_path)
+                LOGGER.info(f"Deleted schema file: {file_path}")
+    else:
+        LOGGER.info(f"The old schema reference {SCHEMA_DIR_ABSOLUTE} is incorrect.")
 
 @utils.handle_top_exception(LOGGER)  # decorates main with exception logging
 def main():
@@ -45,6 +69,10 @@ def main():
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
+        # Read the new parameter
+        delete_existing_schemas = args.config.get('purge_schemas_on_discovery', False)
+        if delete_existing_schemas:
+            delete_schema_files()
         catalog = discover(load_schemas(series_list_file_location))
         catalog.dump()
     # Otherwise run in sync mode
