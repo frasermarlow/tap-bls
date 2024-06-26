@@ -3,7 +3,6 @@
 import datetime     # time and dates functions
 import dateutil
 import singer
-# from singer import Transformer, metadata
 import pytz         # timestamp localization / timezones
 from .update_state import update_state
 from .client import call_api  # set up API call

@@ -4,12 +4,31 @@
 import os
 import json
 
-
-from singer import metadata
+import singer
+from singer import metadata, utils
 from singer.schema import Schema
 from singer.catalog import Catalog, CatalogEntry
 from .streams import STREAM_OBJECTS  # stream-specific objects for handling the data model in each stream
 from .create_schemas import create_schemas
+
+REQUIRED_CONFIG_KEYS = []  # technically you do not require an API key for this to work, but you will hit limits
+LOGGER = singer.get_logger()
+
+def delete_schema_files(schemas_path):
+    """
+    If the config parameter 'purge_schemas_on_discovery' is set to 'true' this function will purge out the old schema files prior to them being written back in based on the standard 'discovery' process.
+    :return: None
+    """
+    if os.path.exists(schemas_path):
+        for filename in os.listdir(schemas_path):
+            file_path = os.path.join(schemas_path, filename)
+            if os.path.isfile(file_path) and filename.endswith('.json'):
+                os.remove(file_path)
+                LOGGER.info(f"Deleted schema file: {file_path}")
+    else:
+        LOGGER.info(f"The old schema reference {schemas_path} is incorrect.")
+
+    return None
 
 # function for finding a file on the system running the tap, relative to the file running the tap.
 def get_abs_path(thepath):
@@ -23,21 +42,27 @@ def load_schemas(series_list_file_location=None):
     ### Load schemas from schemas folder ###
     schemas = {}
     schemas_path = get_abs_path("schemas")
+    args = utils.parse_args(REQUIRED_CONFIG_KEYS)
 
     # If the '/schemas/ folder is missing, create it.
     if not os.path.isdir(schemas_path):
         os.mkdir(schemas_path)
+    if args.config.get('purge_schemas_on_discovery') == "true":
+        delete_schema_files(schemas_path)
+    else:
+        LOGGER.info(f"No schemas were deleted.")
 
     # If no schemas are found in the /schemas/ folder, then generate them using create_schemas.py
-    if len([name for name in os.listdir(schemas_path) if os.path.isfile(os.path.join(schemas_path, name))]) == 0:
-        create_schemas(series_list_file_location)
+    # if len([name for name in os.listdir(schemas_path) if os.path.isfile(os.path.join(schemas_path, name))]) == 0:
+    create_schemas(series_list_file_location)
 
     # now grab the .json files in /schemas/ and output the catalog.json file.
     for filename in os.listdir(schemas_path):
         path = schemas_path + "/" + filename
-        file_raw = filename.replace(".json", "")
-        with open(path) as f:
-            schemas[file_raw] = Schema.from_dict(json.load(f))
+        if path.endswith(".json"):
+            file_raw = filename.replace(".json", "")
+            with open(path) as f:
+                schemas[file_raw] = Schema.from_dict(json.load(f))
     return schemas  # returns a 'dict' that contains <class 'singer.schema.Schema'> objects
 
 

@@ -1,18 +1,14 @@
-""" Due to the nature of this tap, there are hundreds (if not thousands) if possible sources ("series") you might want to pull from the Bureau of Labor Statistics databases.  The purpose of this script is to let you create all the /tap-bls/tap_bls/schema json files you need for your purpose.  Just add or remove the series from the list, then run this script.
+""" Due to the nature of this tap, there are hundreds (if not thousands) if possible sources ('series') you might want to pull from the Bureau of Labor Statistics databases.  The purpose of this script is to let you create all the /tap-bls/tap_bls/schema json files you need for your purpose.  Just add or remove the series from the list, then run this script.
 fraser marlow - Nov 2020 """
 
-#!/usr/bin/env python3
-#
+#!/usr/bin/env python3#
 from __future__ import print_function
 import sys
 import json  # parsing json files
 import os
 from os import path
-
 import singer
 
-# from singer.schema import Schema
-# from singer import utils, metadata
 LOGGER = singer.get_logger()
 
 
@@ -48,7 +44,7 @@ def write_schema_to_file(series, schema_location):
     except Exception as e:
         LOGGER.info("hit an error creating the schema for %s - %s", series["seriesID"], e)
     else:
-        LOGGER.info("created schema for series %s", series["seriesID"])
+        LOGGER.info("Created schema for series %s", series["seriesID"])
     return
 
 

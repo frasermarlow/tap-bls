@@ -1,4 +1,4 @@
-""" Update the STATE.json file after each stream is synch'ed """
+""" Update the STATE.json file after each stream is sync'ed """
 #!/usr/bin/env python3
 #
 # NOTE: This function is unusual for a Singer Tap.  The Tap should *NOT* be updating the state.json file so we recomend not using this and setting "update_state": "false" in your config.json file.
@@ -6,7 +6,6 @@
 from __future__ import print_function
 import sys
 import json # parsing json files
-# import getopt # parse command line arguments
 from os import path
 
 
