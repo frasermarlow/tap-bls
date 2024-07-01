@@ -91,10 +91,7 @@ def discover(raw_schemas):
                 schema=schema,
             )
         )
-    return Catalog(streams)  # object with class 'singer.catalog.Catalog'
-
-
-#  everything below is from the Adroll tap
+    return Catalog(streams)
 
 # Load schemas from schemas folder
 def _load_schemas():

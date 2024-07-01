@@ -25,8 +25,8 @@ def get_series_list(series_list_file_location=None):
         elif '-c' in sys.argv:
             config_index = sys.argv.index('-c') + 1
         config_path = sys.argv[config_index]
-        directory = os.path.dirname(config_path) if '/' in config_path else '.'
-        series_list_file_location = os.path.join(directory, "series.json")
+        directory = path.dirname(config_path) if '/' in config_path else '.'
+        series_list_file_location = path.join(directory, "series.json")
 
     if not path.exists(series_list_file_location):
         print("I could not locate file " + series_list_file_location)
@@ -56,32 +56,30 @@ def write_schema_to_file(series, schema_location):
 
 
 def create_schemas(series_list_file_location=None):
-    """ creates schemas """
-    if series_list_file_location:
-        schemas_to_create = get_series_list(series_list_file_location)
-        for series in schemas_to_create["series"]:
-            if str(series["create_this_schema"].lower()) == "true":
-                schema_json = {
-                    "type": ["null", "object"],
-                    "additionalProperties": ["schema", "record", "type", "stream"],
-                    "seriesID": series["seriesid"],
-                    "series_description": series["description"],
-                    "key_properties": ["SeriesID", "full_period"],
-                    "bookmark_properties": ["time_extracted"],
-                    "properties": {
-                        "SeriesID": {"type": ["null", "string"]},
-                        "year": {"type": ["null", "string"]},
-                        "period": {"type": ["null", "string"]},
-                        "value": {"type": ["null", "string"]},
-                        "footnotes": {"type": ["null", "string"]},
-                        "full_period": {"type": ["null", "string"], "format": "date-time"},
-                        "time_extracted": {"type": ["null", "string"], "format": "date-time"},
-                    },
-                }
-                schema_file = series["seriesid"] + ".json"
-                schema_location = get_abs_path("schemas") + "/" + schema_file
+    """
+    Loops through the series.json object and creates schemas for each series specificed where the flag 'create_this_schema' is 'true'.
+    """
+    schemas_to_create = get_series_list(series_list_file_location)
 
-                return write_schema_to_file(schema_json, schema_location)
-    else:
-        LOGGER.info(f"No BLS series ids have been provided. Please refer to the tap documentation on how to set these up.")
-        return False
+    for series in schemas_to_create["series"]:
+        if str(series["create_this_schema"].lower()) == "true":
+            schema_json = {
+                "type": ["null", "object"],
+                "additionalProperties": ["schema", "record", "type", "stream"],
+                "seriesID": series["seriesid"],
+                "series_description": series["description"],
+                "key_properties": ["SeriesID", "full_period"],
+                "bookmark_properties": ["time_extracted"],
+                "properties": {
+                    "SeriesID": {"type": ["null", "string"]},
+                    "year": {"type": ["null", "string"]},
+                    "period": {"type": ["null", "string"]},
+                    "value": {"type": ["null", "string"]},
+                    "footnotes": {"type": ["null", "string"]},
+                    "full_period": {"type": ["null", "string"], "format": "date-time"},
+                    "time_extracted": {"type": ["null", "string"], "format": "date-time"},
+                },
+            }
+            schema_file = series["seriesid"] + ".json"
+            schema_location = get_abs_path("schemas") + "/" + schema_file
+            write_schema_to_file(schema_json, schema_location)
