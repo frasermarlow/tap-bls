@@ -32,7 +32,9 @@ def main():
         generate_state()        # ... generate one
 
     series_list_file_location = args.config.get('series_list_file_location', None)
-    if series_list_file_location == "<absolute or relative path>/series.json":
+    if series_list_file_location == None:
+        LOGGER.info("No data series has been specified. The tap will attempt to retrieve from the default location.")
+    elif series_list_file_location == "<absolute or relative path>/series.json":
         LOGGER.info("It appears you have not yet replaced the default values in the config template. Please refer to the tap documentation on how to insert your own values.")
         sys.exit(0)
 
