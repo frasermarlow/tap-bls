@@ -20,10 +20,14 @@ def get_series_list(series_list_file_location=None):
     series_to_create = {}
 
     if not series_list_file_location:
-        config_index = sys.argv.index('--config') + 1
+        if '--config' in sys.argv:
+            config_index = sys.argv.index('--config') + 1
+        elif '-c' in sys.argv:
+            config_index = sys.argv.index('-c') + 1
         config_path = sys.argv[config_index]
         directory = os.path.dirname(config_path) if '/' in config_path else '.'
         series_list_file_location = os.path.join(directory, "series.json")
+
     if not path.exists(series_list_file_location):
         print("I could not locate file " + series_list_file_location)
     else:

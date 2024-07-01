@@ -11,10 +11,20 @@ from os import path
 
 def generate_state():
     """ If the STATE.json file is missing, create one """
-    config_index = sys.argv.index('--config') + 1
+    if '--config' in sys.argv:
+        config_index = sys.argv.index('--config') + 1
+    elif '-c' in sys.argv:
+        config_index = sys.argv.index('-c') + 1
+    else:
+        raise ValueError("Missing required argument: --config or -c")
+
+    if config_index >= len(sys.argv):
+        raise ValueError("Config path not provided")
+
     config_path = sys.argv[config_index]
     directory = path.dirname(config_path) if '/' in config_path else '.'
     state_file = path.join(directory, "state.json")
+
     if not path.exists(state_file):
         data = {"bookmarks": {}}
         with open(state_file, "w") as jsonFile:
@@ -22,6 +32,7 @@ def generate_state():
         result = True
     else:
         result = False
+
     return result
 
 def update_state(state_updates):
@@ -31,7 +42,11 @@ def update_state(state_updates):
         state_file = sys.argv[sys.argv.index('--state')+1]
     except Exception as e1:
         try:
-            state_file = sys.argv[sys.argv.index('--config')+1].rsplit('/', 1)[0]+"/state.json"
+            if '--config' in sys.argv:
+                config_index = sys.argv.index('--config') + 1
+            elif '-c' in sys.argv:
+                config_index = sys.argv.index('-c') + 1
+            state_file = sys.argv[config_index].rsplit('/', 1)[0]+"/state.json"
         except Exception as e2:
             info = "No 'state.json' file was specified and could not be generated in the config folder. " + e1 + " | " + e2
 
