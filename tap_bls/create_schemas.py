@@ -2,9 +2,8 @@
 fraser marlow - Nov 2020 """
 
 #!/usr/bin/env python3#
-from __future__ import print_function
 import sys
-import json  # parsing json files
+import json
 import os
 from os import path
 import singer
@@ -21,7 +20,10 @@ def get_series_list(series_list_file_location=None):
     series_to_create = {}
 
     if not series_list_file_location:
-        series_list_file_location = sys.argv[sys.argv.index("--config") + 1].rsplit("/", 1)[0] + "/series.json"
+        config_index = sys.argv.index('--config') + 1
+        config_path = sys.argv[config_index]
+        directory = os.path.dirname(config_path) if '/' in config_path else '.'
+        series_list_file_location = os.path.join(directory, "series.json")
     if not path.exists(series_list_file_location):
         print("I could not locate file " + series_list_file_location)
     else:
@@ -43,34 +45,39 @@ def write_schema_to_file(series, schema_location):
             json.dump(series, jsonFile)
     except Exception as e:
         LOGGER.info("hit an error creating the schema for %s - %s", series["seriesID"], e)
+        return False
     else:
-        LOGGER.info("Created schema for series %s", series["seriesID"])
-    return
+        LOGGER.info("created schema for series %s", series["seriesID"])
+    return True
 
 
 def create_schemas(series_list_file_location=None):
     """ creates schemas """
-    schemas_to_create = get_series_list(series_list_file_location)
-    for series in schemas_to_create["series"]:
-        if str(series["create_this_schema"].lower()) == "true":
-            schema_json = {
-                "type": ["null", "object"],
-                "additionalProperties": ["schema", "record", "type", "stream"],
-                "seriesID": series["seriesid"],
-                "series_description": series["description"],
-                "key_properties": ["SeriesID", "full_period"],
-                "bookmark_properties": ["time_extracted"],
-                "properties": {
-                    "SeriesID": {"type": ["null", "string"]},
-                    "year": {"type": ["null", "string"]},
-                    "period": {"type": ["null", "string"]},
-                    "value": {"type": ["null", "string"]},
-                    "footnotes": {"type": ["null", "string"]},
-                    "full_period": {"type": ["null", "string"], "format": "date-time"},
-                    "time_extracted": {"type": ["null", "string"], "format": "date-time"},
-                },
-            }
-            schema_file = series["seriesid"] + ".json"
-            schema_location = get_abs_path("schemas") + "/" + schema_file
+    if series_list_file_location:
+        schemas_to_create = get_series_list(series_list_file_location)
+        for series in schemas_to_create["series"]:
+            if str(series["create_this_schema"].lower()) == "true":
+                schema_json = {
+                    "type": ["null", "object"],
+                    "additionalProperties": ["schema", "record", "type", "stream"],
+                    "seriesID": series["seriesid"],
+                    "series_description": series["description"],
+                    "key_properties": ["SeriesID", "full_period"],
+                    "bookmark_properties": ["time_extracted"],
+                    "properties": {
+                        "SeriesID": {"type": ["null", "string"]},
+                        "year": {"type": ["null", "string"]},
+                        "period": {"type": ["null", "string"]},
+                        "value": {"type": ["null", "string"]},
+                        "footnotes": {"type": ["null", "string"]},
+                        "full_period": {"type": ["null", "string"], "format": "date-time"},
+                        "time_extracted": {"type": ["null", "string"], "format": "date-time"},
+                    },
+                }
+                schema_file = series["seriesid"] + ".json"
+                schema_location = get_abs_path("schemas") + "/" + schema_file
 
-            write_schema_to_file(schema_json, schema_location)
+                return write_schema_to_file(schema_json, schema_location)
+    else:
+        LOGGER.info(f"No BLS series ids have been provided. Please refer to the tap documentation on how to set these up.")
+        return False

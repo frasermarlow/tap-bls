@@ -1,10 +1,9 @@
 """
     tap-bls core module
     Original creation date: 2020-12-7
-    Updated 2024-06-25
+    Updated 2024-06-30
 """
 #!/usr/bin/env python3
-from __future__ import print_function
 import sys
 import singer
 from singer import utils, metadata
@@ -33,6 +32,9 @@ def main():
         generate_state()        # ... generate one
 
     series_list_file_location = args.config.get('series_list_file_location', None)
+    if series_list_file_location == "<absolute or relative path>/series.json":
+        LOGGER.info("It appears you have not yet replaced the default values in the config template. Please refer to the tap documentation on how to insert your own values.")
+        sys.exit(0)
 
     # If discover flag was passed, run discovery mode and dump output to stdout
     if args.discover:
@@ -43,7 +45,6 @@ def main():
         if args.catalog:
             catalog = args.catalog
         else:
-            LOGGER.info("here.")
             catalog = discover(load_schemas(series_list_file_location))
             LOGGER.info("You did not specify a catalog.json file, so I will create one.")
         if not catalog.streams:

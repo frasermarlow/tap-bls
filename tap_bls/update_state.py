@@ -11,7 +11,10 @@ from os import path
 
 def generate_state():
     """ If the STATE.json file is missing, create one """
-    state_file = sys.argv[sys.argv.index('--config')+1].rsplit('/', 1)[0]+"/state.json"
+    config_index = sys.argv.index('--config') + 1
+    config_path = sys.argv[config_index]
+    directory = path.dirname(config_path) if '/' in config_path else '.'
+    state_file = path.join(directory, "state.json")
     if not path.exists(state_file):
         data = {"bookmarks": {}}
         with open(state_file, "w") as jsonFile:
