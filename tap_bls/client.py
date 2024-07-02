@@ -7,12 +7,12 @@ import singer
 
 LOGGER = singer.get_logger()
 
-log = False  # Set to 'True' to trigger raw API call logging
+LOG = False  # Set to 'True' to trigger raw API call logging
 
 def log_the_api_call_to_file(p, s):
     """ creates a log of the raw call and returned data - mostly useful for testing """
-    if log:
-        with open("api_call_"+s+".txt", "a") as f:
+    if LOG:
+        with open("api_call_"+s+".txt", "a", encoding='utf-8') as f:
             f.write(p+"\n\n")
     else:
         return
@@ -23,7 +23,12 @@ def call_api(api_parameters):
     a = 0
     headers = {'Content-type': 'application/json'}
     data = json.dumps(api_parameters)
-    p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
+    p = requests.post(
+        'https://api.bls.gov/publicAPI/v2/timeseries/data/',
+        data=data,
+        headers=headers,
+        timeout=120
+    )
     log_the_api_call_to_file("RAW: " + str(p.text), "raw")
     payload = json.loads(p.text)
 
@@ -40,13 +45,11 @@ def call_api(api_parameters):
             LOGGER.info(idx)
             if msg[0:122] == "Request could not be serviced, as the daily threshold for total number of requests allocated to the user has been reached.":
                 LOGGER.info("The API call was not processed as you have hit your daily limit. The API returned this error: \"%s\"", notes)
-                return False
-            elif msg[0:8] == "The key:":
+            if msg[0:8] == "The key:":
                 LOGGER.info("The API call for series %s failed. Check your API key in the config file. The API returned this error: \"%s\"", str(api_parameters['seriesid'][0]), notes)
-                return False
             else:
                 LOGGER.info("The API call for series %s failed. The API returned this error: \"%s\"", str(api_parameters['seriesid'][0]), notes)
-                return False
+            return False
 
     elif payload['status'] == "REQUEST_FAILED_INVALID_PARAMETERS":
 
@@ -61,11 +64,15 @@ def call_api(api_parameters):
             if msg[0:14] == "Invalid Series": #  API call succeeded but Series not found
                 LOGGER.info("The API call succeeded but the series %s was not found. The API returned this error: \"%s\"", str(api_parameters['seriesid'][0]), notes)
                 return False
-            elif msg[0:29] == "No Data Available for Series ":
+            if msg[0:29] == "No Data Available for Series ":
                 LOGGER.info("The API call succeeded but the series %s returned this error: \"%s\"", str(api_parameters['seriesid'][0]), msg)
                 LOGGER.info("This may indicate a partial result set, so I am going to proceed.")
             else:
-                message = "API call for series " + str(api_parameters['seriesid'][0]) + " succeeded in " + str(payload['responseTime']) + "ms"
+                message = "API call for series " \
+                          + str(api_parameters['seriesid'][0]) \
+                          + " succeeded in " \
+                          + str(payload['responseTime']) \
+                          + "ms"
                 LOGGER.info(message)
                 seriesid = payload['Results']['series'][0]['seriesID']
                 log_the_api_call_to_file("API PARAMETERS: " + str(api_parameters), seriesid)
@@ -74,7 +81,9 @@ def call_api(api_parameters):
     else:
         log_the_api_call_to_file("ERROR: " + str(api_parameters), "error")
         log_the_api_call_to_file("JSON REQUEST RESULTS: " + str(payload), "error")
-        message = "API call succeeded in " + str(payload['responseTime']) + "ms but returned a status of " + payload['status']
+        message = "API call succeeded in " \
+                  + str(payload['responseTime']) \
+                  + "ms but returned a status of " + payload['status']
         LOGGER.info(message)
         return False
 
@@ -82,5 +91,5 @@ def call_api(api_parameters):
         message = "No data returned for series " + str(payload['Results']['series'][0]['seriesID'])
         LOGGER.info(message)
         return False
-    else:
-        return json.loads(p.text)
+
+    return json.loads(p.text)

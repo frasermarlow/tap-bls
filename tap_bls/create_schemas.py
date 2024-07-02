@@ -58,6 +58,7 @@ def write_schema_to_file(series, schema_location):
 def create_schemas(series_list_file_location=None):
     """
     Loops through the series.json object and creates schemas for each series specificed where the flag 'create_this_schema' is 'true'.
+    If series_list_file_location is None, an attempt will be made downstream to retrieve the default lotation.
     """
     schemas_to_create = get_series_list(series_list_file_location)
 

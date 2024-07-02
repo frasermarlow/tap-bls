@@ -86,15 +86,18 @@ def do_sync(config, state, catalog):
         else:
             LOGGER.info("The series provided an unsupported frequency of %s", series_frequency)
 
-        # if series_frequency == "A":  # series is annual
-        #    raw_schema['properties']['year'] = {"type":["null", "integer"]}
-        # if series_frequency == "S":  # series is semi-annual
-        #    raw_schema['properties']['period'] = {"type":["null", "integer"]}
-        # if series_frequency == "Q":  # series is quarterly
-        #    raw_schema['properties']['quarter'] = {"type":["null", "integer"]}
-        #    raw_schema['properties']['year'] = {"type":["null", "integer"]}
-        # if series_frequency == "M":  # series is monthly
-        #    raw_schema['properties']['month'] = {"type":["null", "integer"]}
+        # frequency_mapping = {
+        #     "A": {"year": {"type": ["null", "integer"]}},  # annual
+        #     "S": {"period": {"type": ["null", "integer"]}},  # semi-annual
+        #     "Q": {  # quarterly
+        #         "quarter": {"type": ["null", "integer"]},
+        #         "year": {"type": ["null", "integer"]}
+        #     },
+        #     "M": {"month": {"type": ["null", "integer"]}}  # monthly
+        # }
+        #
+        # if series_frequency in frequency_mapping:
+        #     raw_schema['properties'].update(frequency_mapping[series_frequency])
 
         if ("calculations" in config.keys()) and (config['calculations'].lower() == "true"):
             raw_schema['properties']['net_change_1'] = {"type":["null", "number"]}
@@ -120,8 +123,6 @@ def do_sync(config, state, catalog):
         max_bookmark = 0
         max_year = 0
         utc = pytz.timezone('UTC')
-        # thetime = utc.localize(datetime.datetime.now())
-        # thetimeformatted = thetime.astimezone().isoformat()
 
         for series in json_data['Results']['series']:
             seriesId = series['seriesID']
